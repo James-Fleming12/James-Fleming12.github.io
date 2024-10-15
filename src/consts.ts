@@ -1,2 +1,2 @@
-export const SITE_TITLE = 'MOTGAMOOP';
-export const SITE_DESCRIPTION = 'James Fleming Personal Site';
+export const SITE_TITLE = 'JF';
+export const SITE_DESCRIPTION = 'Personal Site';

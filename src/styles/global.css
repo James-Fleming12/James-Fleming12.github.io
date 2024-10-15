@@ -5,8 +5,8 @@
  */
 
 :root {
-    --accent: #2337ff;
-    --accent-dark: #000d8a;
+    --accent: #2337ff; /* old: #2337ff */
+    --accent-dark: #000b6d; /* old: #000d8a */
     --white: 243, 243, 243; /* start text */
     --gray: 96, 115, 159;
     --gray-light: 68, 69, 71; /* end text */
@@ -19,21 +19,21 @@ html {
     background: black; /* background color below footer */
 }
 @font-face {
-    font-family: 'Atkinson';
-    src: url('/fonts/atkinson-regular.woff') format('woff');
+    font-family: 'AzeretMono';
+    src: url('/fonts/AzeretMono-Medium.ttf') format('ttf');
     font-weight: 400;
     font-style: normal;
     font-display: swap;
 }
 @font-face {
-    font-family: 'Atkinson';
-    src: url('/fonts/atkinson-bold.woff') format('woff');
+    font-family: 'AzeretMono';
+    src: url('/fonts/AzeretMono-Medium.ttf') format('ttf');
     font-weight: 700;
     font-style: normal;
     font-display: swap;
 }
 body {
-    font-family: 'Atkinson', sans-serif;
+    font-family: 'AzeretMono', sans-serif;
     margin: 0;
     padding: 0;
     text-align: left;
