@@ -18,5 +18,6 @@ The original [Capsule Network paper](https://arxiv.org/abs/1710.09829) was a sim
 2. PrimaryCaps
 3. DigitCaps
 
+The Convolutional Layer speaks for itself if you know anything about neural networks. It is just a convolutional layer that acts as preprocessing for the PrimaryCaps layer so it has more dense information to handle. The main logic changes come once the PrimaryCaps layer is reached. The PrimaryCaps layer learns how to take the information from the convolutional layer and turn it into a set of neurons. 
 ### EM Routing:
 ...
