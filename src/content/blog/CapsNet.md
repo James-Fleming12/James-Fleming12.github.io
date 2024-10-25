@@ -7,7 +7,9 @@ A powerful and
 ### Previous Problems:
 Two main problems existed in the implementation and very basis of neural networks for computer vision
 1. Pooling works, but it loses so much information that it shouldn't
-2. Objects that are flipped over and orientated differently are not recognized as the same object with the typical amount of training
+2. Objects at different orientations are treated as different objects
+
+Capsule Networks attempt to solve these problems with a 
 ### Capsules:
 ...
 ### Dynamic Routing:
