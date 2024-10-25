@@ -5,12 +5,12 @@
  */
 
 :root {
-    --accent: #2337ff; /* old: #2337ff */
+    --accent: #4765ca; /* old: #2337ff */
     --accent-dark: #000b6d; /* old: #000d8a */
-    --white: 243, 243, 243; /* start text */
+    --white: 223, 223, 223; /* start text */
+    --gray-dark: 223, 223, 223;
     --gray: 96, 115, 159;
     --gray-light: 68, 69, 71; /* end text */
-    --gray-dark: 255, 255, 255;
     --gray-gradient: rgba(var(--accent), 50%), #fff;
     --box-shadow: 0 2px 6px rgba(var(--gray), 25%), 0 8px 24px rgba(var(--gray), 33%),
         0 16px 32px rgba(var(--gray), 33%);
@@ -19,21 +19,21 @@ html {
     background: black; /* background color below footer */
 }
 @font-face {
-    font-family: 'AzeretMono';
-    src: url('/fonts/AzeretMono-Medium.ttf') format('ttf');
+    font-family: "FragmentMono";
+    src: url("/fonts/FragmentMono-Regular.ttf") format('truetype');
     font-weight: 400;
     font-style: normal;
     font-display: swap;
 }
 @font-face {
-    font-family: 'AzeretMono';
-    src: url('/fonts/AzeretMono-Medium.ttf') format('ttf');
+    font-family: "FragmentMono";
+    src: url("/fonts/FragmentMono-Regular.ttf") format('truetype');
     font-weight: 700;
     font-style: normal;
     font-display: swap;
 }
 body {
-    font-family: 'AzeretMono', sans-serif;
+    font-family: "FragmentMono";
     margin: 0;
     padding: 0;
     text-align: left;
