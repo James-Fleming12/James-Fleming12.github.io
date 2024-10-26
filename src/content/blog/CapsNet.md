@@ -16,7 +16,7 @@ The very backbone of a Capsule Network comes in how it's neurons are treated. In
 Because of their nature, typical activation functions can't be applied to vectors in the manner they can to scalars. Thus each vector is oftened squased to a range of 0 to 1 representing it's activation. This allows each capsule to separate their activation away from the information it represents, further improving the information transfer within the network. The original paper uses a nonlinear squashing function that ensures the short vectors are shrunk to almost zero and long vectors are shrunk to almost 1.
 
 ### Original CapsNet:
-The original Capsule Network [paper](https://arxiv.org/abs/1710.09829) was a simple exploration of the idea. Due to it being tailored for the MNiST dataset, it only needed the barebone architecture necessary to get the network running. It consisted of the following 3 layers not including the Input and Output layer, which were both typical input and output layers seen in previous MNiST models.
+The original Capsule Network paper [Dynamic Routing Between Capsules](https://arxiv.org/abs/1710.09829) was a simple exploration of the idea. Due to it being tailored for the MNiST dataset, it only needed the barebone architecture necessary to get the network running. It consisted of the following 3 layers not including the Input and Output layer, which were both typical input and output layers seen in previous MNiST models.
 1. Convolutional Layer (basic representation)
 2. PrimaryCaps (intermediate representation)
 3. DigitCaps (complete representation)
@@ -47,4 +47,4 @@ $$
 These steps repeat a fixed number of times to ensure that a consensus can be reached in the layer. If the consensus is reached before many other models also introduce a convergence check that stops the iterations early if the layer has already reached a consensus.
 
 ### EM Routing:
-...
+The most notable extension of the original CapsNet implementation comes from [Matrix Capsules with EM Routing](https://openreview.net/pdf?id=HJWLfGWRb) which introduces a new form of routing algorithm. It's new design and the subsequent optimizations lead to models that can extend their use beyond the simplest datasets. Instead of the Dot Product based agreement calculations from Dynamic Routing the paper introduces a method of Clustering. It follows the lead of Gaussian Mixture Models and tries to emulate it's methods of clustering to compute the agreements (called EM Routing due to its similarities to a GMM's EM Algorithm).
