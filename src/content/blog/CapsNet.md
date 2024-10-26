@@ -3,7 +3,7 @@ title: Capsule Network Overview
 description: A basic survey of a basic capsule network
 pubDate: 10/13/2024
 ---
-Capsule Networks represent a new 
+Capsule Networks represent a new paradigm for computer vision models to develop into something that resembles a logical view of the world for computers. The paths are endless with increased accuracy both theoretically and in practice at the expense of added computational complexity. This post will cover both the original Capsule Networks paper ([Dynamic Routing](https://arxiv.org/abs/1710.09829)) and the most prominent followup paper ([EM Routing](https://openreview.net/pdf?id=HJWLfGWRb))
 ### Previous Problems:
 Two main problems existed in the implementation and very basis of neural networks in computer vision
 1. Pooling works, but it loses so much information that it shouldn't
