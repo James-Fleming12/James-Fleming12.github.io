@@ -21,4 +21,6 @@ The difference in the two models comes from not only the structure of the ConvCa
 ### Capsule Pruning:
 The Pruned Capsule Layer serves to remove any redundant or otherwise unneeded capsules based on similarity to other capsules. When two capsules share similar data, they theoretically represent the same object, which not only consumes more computational power but also serves to confuse and undermine other data from other capsules. The layer removes these capsules based on their [cosine similarity](https://www.sciencedirect.com/topics/computer-science/cosine-similarity), a measure of the similarity between two vectors based on the angle between them. A smaller angle between them, the more similar they are. This is then combined with another metric of importance, ...
 
+This is optimized with the use of a mask matrix, a type of matrix that is used to eliminate the data out of certain sections of another matrix or vector. This ...
+
 ### Sparse Attention Routing:
