@@ -24,3 +24,4 @@ The Pruned Capsule Layer serves to remove any redundant or otherwise unneeded ca
 This is optimized with the use of a mask matrix, a type of matrix that is used to eliminate the data out of certain sections of another matrix or vector. This ...
 
 ### Sparse Attention Routing:
+Now comes the main differences between both model types mentioned previously. Their routing mechanism, influenced by the original Dynamic Routing procedures of typical Capsule Networks, removes the need for iteration completely in dynamic routing.
