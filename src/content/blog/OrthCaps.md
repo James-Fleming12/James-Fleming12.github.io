@@ -38,7 +38,7 @@ C=\alpha\text{-Entmax}(QK^T/\sqrt{d})=\alpha\text{-Entmax}(W_QU_lU_l^TW_K^T/\sqr
 \alpha\text{-EntMax}(x_i)=\max\left(\frac{x_i-\tau}{\alpha},0\right)^{\frac{1}{\alpha-1}}
 \end{gather*}
 $$
-The Weight Matrices $W_V$ are properly diagonalized using the properties of Householder Transformations, Transformations with the form $I-2vv^*$ that describe reflections about a plane. Any orthogonal $n\times n$ matrix can be defined using the product of at most $n$ Householder Transformations. This means that if you train the network to rather learn these transformations instead of the matrix itself, it will keep itself orthogonalized. This is done with a set of learnable $b_i$ column vectors that are randomly generated at the beginning of the training process.
+The Weight Matrices $W_V$ are properly diagonalized using the properties of Householder Transformations, Transformations with the form $I-2vv^T$ that describe reflections about a plane. Any orthogonal $n\times n$ matrix can be defined using the product of at most $n$ Householder Transformations. This means that if you train the network to rather learn these transformations instead of the matrix itself, it will keep itself orthogonalized. This is done with a set of learnable $b_i$ column vectors that are randomly generated at the beginning of the training process.
 $$
 W=\prod_{i=0}^{d-1}\left(I-\frac{2b_ib_i^T}{||b_i||^2}\right)
 $$
