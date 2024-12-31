@@ -41,7 +41,6 @@ $$
 \begin{gather*}
 v_j=\frac{||s_j||^2}{1+||s_j||^2}\frac{s_j}{||s_j||}\\
 a_{ij}=v_j\cdot \hat{u}_{j|i}\\
-c_{ij}=\frac{\exp(b_{ij})}{\sum_k\exp(b_{ik})}
 \end{gather*}
 $$ 
 The coupling coefficient adds the agreement scores to its own original value $b_{ij}$. This value represents the Log of the [Prior Probabilities](https://www.statlect.com/glossary/prior-probability) that the capsule $i$ couples with capsule $j$. This value is then updated throughout the iterative process with the agreement score, but is also learned throughout training for the initial values. The collection of routing coefficients are also put under a [softmax](https://medium.com/@hunter-j-phillips/a-simple-introduction-to-softmax-287712d69bac) function to ensure they total up to 1 and represent proper probabilities.
