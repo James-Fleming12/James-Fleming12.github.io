@@ -29,10 +29,10 @@ An understanding of the equation is not necessary for this post, but rather just
 
 This can then be improved with something they call the clamping trick. As the neural network is used both during the diffusion steps and decoding, it is clamped to the nearest known word vector. This creates a scenario in which the vector commits at the end of the diffusion process, but in between steps as well. Each diffusion step is defined below with some $\beta_s$ that defines the behavior and speed of the noise reduction in the network. Again it is not necessary to understand the equations they are simply there to showcase how the clamping works at each diffusion step.
 $$
-\begin{gather}
+\begin{gather*}
 x_{t-1}=\sqrt{\bar{\alpha}}\cdot\text{Clamp}(f_\theta(x_t,t))+\sqrt{1-\bar{\alpha}}\epsilon\\
 \bar{\alpha}_t=\prod^t_{s=0}(1-\beta_s)
-\end{gather}
+\end{gather*}
 $$
 
 Both of these combined create a method of diffusion that can work with and create language. This barely scratches the surface of the model, and again I am not going to be covering how the model is trained or the extensive explorations of controlling the text generation because that section of the model is meant to be changed. The specific guidance model is what changes the behavior of the model from something that works to generate random sentences to something that can respond to input of any modality. These typically come in the form of Transformers within the tests provided, and aren't even needed for some unique test cases. They can also be extended with length estimators and any such network, Diffusion-LM represents something that is asking to be extended and molded to whatever use case it needs to provide.
