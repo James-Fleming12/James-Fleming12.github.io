@@ -1,5 +1,5 @@
 ---
-title: Swim Transformer Overview
+title: Swim Transformer Paper
 description: A Patch-based Vision Transformer Architecture
 pubDate: 1/01/25
 ---
