@@ -11,7 +11,7 @@ $$
 \begin{gather*}
 \mu_B=\frac{1}{m}\sum^m_{i=1}x_i\\
 \sigma^2_B=\frac{1}{m}\sum^m_{i=1}(x_i-\mu_B)^2
-\begin{gather*}
+\end{gather*}
 $$
 These are calculated because the main point behind Batch Normaliation is to set the mean and variance of these to 0 and 1 respectively, hence the following calculation to normalize each neuron activation.
 $$
