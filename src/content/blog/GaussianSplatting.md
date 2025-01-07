@@ -17,9 +17,13 @@ Along with $\Sigma$, the Gaussian also has the properties of position $p$, opaci
 $$
 \Sigma=RSS^TR^T
 $$
-Then once the Gaussians are projected onto the camera, they simply need to generate a new Covariance Matrix to represent the Gaussian in the viewspace. This is done through generating a new $\Sigma^\prime$ matrix below. A further exploration of the projection and rasterization process will be covered in the portion about the Tile-Based Rasterizer, but for basic knowledge this is also used with a system of $\alpha$-blending to mix the colors of different slightly transparent gaussians.
+Then once the Gaussians are projected onto the camera, they simply need to generate a new Covariance Matrix to represent the Gaussian in the viewspace. This is done through generating a new $\Sigma^\prime$ matrix below.
 $$
 \Sigma^\prime=JW\Sigma W^T J^T
+$$
+A further exploration of the projection and rasterization process will be covered in the portion about the Tile-Based Rasterizer, but for basic knowledge this is also used with a system of $\alpha$-blending to mix the colors of different slightly transparent gaussians. For some $N$ number of ordered points that overlap the pixel, the color displayed on that pixel is derived below.
+$$
+C=\sum_{i\in N}c_i\alpha_i\prod_{j=1}^{i-1}(1-\alpha_i)
 $$
 
 ### Optimization:
