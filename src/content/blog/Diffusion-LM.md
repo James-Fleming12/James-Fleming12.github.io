@@ -17,7 +17,7 @@ Diffusion-LM works by denoising a set of random noise vectors into a set of what
 ### Embedding:
 The Embedding process is the simpler of the two, as it resembles that of Word Embeddings in LLMs. The Embedding step encodes each word into learned word vectors that can then have computations performed on it. These are learned in tandem with the diffusion parameters of the model. For a sequence $\textbf{w}$ of length $n$ each word is mapped to a vector of $\mathbb{R}^d$.
 $$
-\text{EMB}(\textbf{w})=[\text{EMB}(w_1),\dots,\text{EMB}(w_n)]\in R^{nd}
+\text{EMB}(\textbf{w})=[\text{EMB}(w_1),\dots,\text{EMB}(w_n)]\in\mathbb{R}^{nd}
 $$
 
 ### Rounding:
@@ -27,7 +27,7 @@ $$
 $$
 An understanding of the equation is not necessary for this post, but rather just seeing that the output of the neural network is used to measure the accuracy of the model. This fixes a majority of the problem of vectors not commiting to words and encodes it directly into the diffusion process. 
 
-This can then be improved with something they call the clamping trick. As the neural network is used both during the diffusion steps and decoding, it is clamped to the nearest known word vector. This creates a scenario in which the vector commits at the end of the diffusion process, but in between steps as well. Each diffusion step is defined below with some $\beta_s$ that defines the behavior and speed of the noise reduction in the network. Again it is not necessary to understand the equations they are simply there to showcase how the clamping works at each diffusion step.
+This can then be improved with something they call the clamping trick. As the neural network is used both during the diffusion steps and decoding, it is clamped to the nearest known word vector. This creates a scenario in which the vector not only commits at the end of the diffusion process, but in between steps as well. Each diffusion step is defined below with some $\beta_s$ that defines the behavior and speed of the noise reduction in the network. Again it is not necessary to understand the equations they are simply there to showcase how the clamping works at each diffusion step.
 $$
 \begin{gather*}
 x_{t-1}=\sqrt{\bar{\alpha}}\cdot\text{Clamp}(f_\theta(x_t,t))+\sqrt{1-\bar{\alpha}}\epsilon\\
