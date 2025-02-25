@@ -55,7 +55,7 @@ $$
 O^{(2)}=\text{diag}(\ell^{(2)})^{-1}\tilde{O}^{(2)}
 \end{gather*}
 $$
-Second, instead of saving both $m$ and $\ell$ in memory we save one collection value $L$ for each tile. This doubles down on the goal to limit the amount of interaction with HBM during training.
+Second, instead of saving both $m$ and $\ell$ in memory we save one collective value $L$ for each tile. This doubles down on the goal to limit the amount of interaction with HBM during training.
 $$
 L^{(j)}=m^{(j)}+\log(\ell^{(j)})
 $$
