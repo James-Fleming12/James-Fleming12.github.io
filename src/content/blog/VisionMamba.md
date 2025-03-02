@@ -1,5 +1,5 @@
 ---
-title: Building up to VisionMamba
+title: Building up to Vision Mamba
 description: An alternative to ViTs using the Mamba Architecture in Computer Vision
 pubDate: 03/01/2025
 ---
