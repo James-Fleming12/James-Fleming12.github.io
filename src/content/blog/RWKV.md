@@ -8,11 +8,11 @@ Transformers have shown the most potential when it comes to natural language pro
 ### Standard Attention:
 The standard attention used in Transformers is a combination of Scaled Dot Product Attention and Multi-Head Attention. Multi-Head Attention is not as important to know for RWKV, as it just produces multiple Scaled Dot Product Attention branches to enable more features to be understood. Scaled Dot Product Attention is the main culprit of the computational complexity of the model. Given some input $X$, the model produces three representations $Q$ (Queries), $K$ (Keys), and $V$ (Values) out of it. This is done through a set of linear projections (most often being a small sub-network).
 $$
-\begin{gather}
+\begin{gather*}
 q_t=W^Qh_t\\
 k_t=W^Kh_t\\
 v_t=W^Vh_t
-\end{gather}
+\end{gather*}
 $$
 These are then used in the main attention algorithm shown below. You do not need to understand the use of it or beyond just knowing that it is used to share information between tokens of the input sequence.
 $$
@@ -34,13 +34,13 @@ Each of these blocks work off of 4 fundamental elements that are present within 
 4. The value vector $V$ (similar to the the values of traditional attention)
 
 ### Time-Mixing:
-The Time-Mixing block marks the start of the network and acts to bring in information from past time steps to the current. Instead of $Q$, $K$, and $V$ this block splits the input into $r_t$, $k_t$ and $v_t$ as described below. It mixes the information from the current input to the block $x_t$ and the previous $x{t-1}$ in a process called Token Shift with a learned mixing parameter $\mu$ (known as the Token Shifting Parameter). 
+The Time-Mixing block marks the start of the network and acts to bring in information from past time steps to the current. Instead of $Q$, $K$, and $V$ this block splits the input into $r_t$, $k_t$ and $v_t$ as described below. It mixes the information from the current input to the block $x_t$ and the previous $x_{t-1}$ in a process called Token Shift with a learned mixing parameter $\mu$ (known as the Token Shifting Parameter). 
 $$
-\begin{gather}
+\begin{gather*}
 r_t=W_r\cdot(\mu_r\odot x_t+(1-\mu_r)\odot x_{t-1})\\
 k_t=W_k\cdot(\mu_k\odot x_t+(1-\mu_k)\odot x_{t-1})\\
 v_t=W_v\cdot(\mu_v\odot x_t+(1-\mu_v)\odot x_{t-1})
-\end{gather}
+\end{gather*}
 $$
 The $k_t$ and $v_t$ values are then used to calculate the $WKV$ operator which acts as a running representation of the sequence. The calculation for it shown below (with learned parameters for time-decay $w$ and bias $u$) is done so that there is an inherent exponential decay in the while still having their information be incorporated. As well the algorithm is formatted so that the calculations done for the previous timestep can be reused in the current.
 $$
@@ -54,10 +54,10 @@ $$
 ### Channel-Mixing:
 The Channel-Mixing block does the same general thing that the Time-Mixing block does but strays away from the information that the $WKV$ operator passes through the block and instead focuses on the information already processed. The block relies on two linear projections $r^\prime_t$ and $k^\prime_t$
 $$
-\begin{gather}
+\begin{gather*}
 r^\prime_t=W^\prime_r\cdot(\mu^\prime_r\odot x_t+(1-\mu_r^\prime)\odot x_{t-1})\\
 k^\prime_t=W^\prime_k\cdot(\mu^\prime_k\odot x_t+(1-\mu_k^\prime)\odot x_{t-1})
-\end{gather}
+\end{gather*}
 $$
 This then skips straight to the output calculation $o^\prime_t$. The main computational change comes in the squared ReLU of the key vector $k^\prime_t$ within the calculation.
 $$
