@@ -103,7 +103,7 @@ $$
 $$
 This process works very well for finding how and where both point maps match, but is extremely slow. The complexity of the algorithm is $O(W^2H^2)$ since each pixel must be compared to every pixel in the other point map. The model goes around this limitation by introducing a new iterative approach to finding these matches, which they call Fast Reciprocal Matching.
 
-![Diagram for Fast Reciprocal Matching](/images/MAst3RFRM.png)
+![Diagram for Fast Reciprocal Matching](/images/MASt3RFRM.png)
 
 First, an initial sparse set of $k$ pixels is defined $U^0=\{U^0_n\}^k_{n=1}$ which is typically sampled on a grid in the first image. Each image is then mapped to its nearest neighbor from the second image (shown below as $V^t$). The resulting pixels are then remapped back to the first image in the same way (shown below as $U^{t+1}$). If both $U^t$ (which is $U^0$ in the first iteration) and $U^{t+1}$ are found to be the same point, they are said to have converged and are collected and removed from the process.
 $$
