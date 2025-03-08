@@ -12,7 +12,7 @@ DUSt3R (standing for Dense and Unconstrained Stereo 3D Reconstruction) is a meth
 
 ![The official DUSt3R architecture diagram](/images/DUSt3r.png)
 
-To be more specific, the model is given input images $I^1,I^2\in\mathbb{R}^{W\times H\times3}$ which yield $X^{1,1},X^{2,1}\in\mathbb{R}^{W\times H\times 3}$ and confidence scores $C^{1,1},C^{2,1}\in\mathbb{W\times H}$ respectively. Each image is passed into its own Vision Transformer, although the Siamese nature described above allows each transformer to share information. First, each image is passed through the ViT Encoder of its respective model, with both encoders sharing the same weight values.
+To be more specific, the model is given input images $I^1,I^2\in\mathbb{R}^{W\times H\times3}$ which yield $X^{1,1},X^{2,1}\in\mathbb{R}^{W\times H\times 3}$ (the point maps of the information from image $1$ and $2$ in the reference frame of image $1$) and confidence scores $C^{1,1},C^{2,1}\in\mathbb{W\times H}$ respectively. Each image is passed into its own Vision Transformer, although the Siamese nature described above allows each transformer to share information. First, each image is passed through the ViT Encoder of its respective model, with both encoders sharing the same weight values.
 $$
 \begin{gather*}
 F^1=\text{Encoder}(I^1)\\
