@@ -50,6 +50,12 @@ $$
 \epsilon_\theta(x_t,t)=\epsilon_\theta(x_t,t)-\sqrt{1-\bar{\alpha}_t}\nabla_{x_t}\log f_\phi(y|x_t)
 $$
 
+## Classifier-Free Guidance:
+This form of guidance is extended by Classifier-Free Guidance which uses a system of two models, one that denoises the input $\epsilon_\theta(z_t)$ and one that denoises the input $\epsilon_\theta(z_t,c)$ given some context $c$. At inference time, the outputs of these two models are combined using some guidance scale $w$, allowing for the importance of the given context to be dynamically controlled.
+$$
+\tilde{\epsilon}_\theta(z_t,c)=(1+w)\epsilon_\theta(z_t,c)-w\epsilon_\theta(z_t)
+$$
+
 # Diffusion-LM:
 At the very beginning of Diffusion Models being considered for Language Modeling, the most influential and foundational work was [Diffusion-LM](https://arxiv.org/abs/2205.14217). The model works to provide a simple way to reformat diffusion models to the language generation paradigm with two main changes, using word embeddings and rounding.
 
@@ -80,12 +86,23 @@ $$
 $$
 In order to get a real language model that can function as a hypothetical generation tool, the original paper uses a simple form of classifier guidance and another network that approximates the length of the output to be generated.
 
-# LLaDa:
-Standing for Large Language Diffusion with mAsking, LLaDa takes the concepts set by Diffusion-LM even further.
+# LLaDA:
+Standing for Large Language Diffusion with mAsking, [LLaDA](https://arxiv.org/abs/2502.09992) takes the concepts set by Diffusion-LM even further. Instead of incentivizing the model to commit to a single word in the intermediate diffusion steps, LLaDA forces the model to commit. This is done with a new paradigm of diffusion model, a [Masked Diffusion Model](https://arxiv.org/abs/2406.04329) called the Mask Predictor $p_\theta(\cdot|x_t)$. Instead of adding noise to the sequence over time, the sequence $x_0$ is masked independently, over $t\in(0,1)$ where at each timestep each token has a probability $t$ of being masked, until it is fully masked at $t=1$. The mask predictor takes any given $x_t$ and predicts all of the masked tokens $M$ simultaneously. This prediction of the mask tokens is then used in the loss function below, where $\mathbb{1}[\cdot]$ represents an indicator function which is used to show whether the token is masked or not.
+$$
+\mathcal{L}(\theta)=-\mathbb{E}_{t,x_0,x_t}\left[\frac{1}{t}\sum^L_{i=1}\mathbb{1}[x^i_t=M]\log p_\theta(x^i_0|x_t)\right]
+$$
+LLaDA then uses this paradigm with a training pattern similar to the [GPT](https://cdn.openai.com/research-covers/language-unsupervised/language_understanding_paper.pdf)-style of LLMs, with a Pre-Training (general knowledge) and Fine-Tuning (specialized knowledge) stage. During Pre-Training, the model is given a large corpus of text data and sequences are fed randomly to it. Fine-Tuning improves the model's use case as a language model, with it being given a pair of prompt-respose data $(p_0, r_0)$. The only part that is masked during the process is the response $r_0$, and the model is trained to predict the response alone.
+$$
+\mathcal{L}(\theta)=-\mathbb{E}_{t,p_0,r_0,r_t}\left[\frac{1}{t}\sum^{L^\prime}_{i=1}\mathbb{1}[r^i_t=M]\log p_\theta(r_0^i|p_0,r_t)\right]
+$$
+To have a form of inference that still aligns with what the model was trained to do, LLaDA uses a system of remasking. At any given intermediate timestep from $t\in(0,1]$ to $s\in[0,t)$, after the model makes the predictions for the sequence's tokens, $\frac{s}{t}$ of the tokens are remasked in expectation to obtain $r_s$ which is used in the next timestep. Although this should be a random process, the model uses a number of deterministic methods as well. The model also uses a system of Classifier-Free Guidance shown below with a hyperparameter $w$ for guidance scale.
+$$
+\tilde{p}_\theta(r_0|p_0,r_t)\propto\frac{p_\theta(r_0|p_0,r_t)^{1+w}}{p_\theta(r_0|m,r_t)^w}
+$$
 
 # MMaDa:
 
-# Autoregressive Diffusion Models:
+# Autoregressive Diffusion:
 
 ## Block Diffusion:
 
