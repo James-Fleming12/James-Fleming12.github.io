@@ -16,7 +16,7 @@
         0 16px 32px rgba(var(--gray), 33%);
 }
 html {
-    background: rgb(10, 10, 10); /* background color below footer */
+    background: rgb(5, 5, 5); /* background color below footer */
 }
 @font-face {
     font-family: "FragmentMono";
@@ -38,7 +38,7 @@ body {
     padding: 0;
     text-align: left;
     /* background: linear-gradient(var(--gray-gradient)) no-repeat; */
-    background: linear-gradient(rgb(0, 0, 17), 50%, rgb(10, 10, 10)) no-repeat; /* main background color  */
+    background: linear-gradient(rgb(0, 0, 17), 50%, rgb(5, 5, 5)) no-repeat; /* main background color  */
     background-size: 100% 600px; /* other background colors are changed in their respective astro files  */
     word-wrap: break-word;
     overflow-wrap: break-word;
