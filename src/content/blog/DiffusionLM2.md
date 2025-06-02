@@ -5,14 +5,14 @@ pubDate: 05/30/2025
 ---
 As Large Language Models and other such autoregressive architectures become increasingly dominant over the landscape of language generation, Google has released a new model centering around a completely different paradigm, [Gemini Diffusion](https://deepmind.google/models/gemini-diffusion/). It presents faster generation and more coherent text over even their top models, and it starts to raise the question of whether these diffusion language models are the future of generation. I've already covered diffusion language models very briefly in a previous blog, but this will act as a more thorough exploration in both the foundations and the current state of the paradigm.
 
-# Autoregressive Language Modeling and LLMs:
+## Autoregressive Language Modeling and LLMs:
 To fully understand the impact that diffusion language models have, one must first know the basics of autoregressive generation, the paradigm used by LLMs and that which has dominated the landscape for years now. To make sure that the differences are understood, I am going to give a very very brief overview of what LLMs really do under the hood. 
 
 ![A Diagram for Autoregressive Generation](/images/AutoregressiveEx.png)
 
 LLMs are a series of Transformer blocks, each containing an Attention block to have the information within the sequence interact and a Neural Network block to have the information be updated, which are given a sequence of tokens representing the words from the input. This is repeated however many times is deemed necessary by the model's creators and at the very end of these blocks a final linear layer is used to get an output of probabilities. These probabilities represent the probability of a given word being next within the sequence, and the model uses these to choose the next word within said sequence. That word is appended to the input and is fed back into the model to output the next word, and for many modern LLMs this continues until a specific end-of-sentence token is output instead. This has been proven time and time again to work brilliantly, but the format is highly flawed. This style of generation is not computationally efficient in the slightest and is not backed up by how our brains are wired and process information in the slightest, being something that doesn't use internal memory systems at all. The biggest problem that is spawned from this form of generation however is the underlying issue that the previous parts of the sequence can not be influenced by later parts.
 
-# Diffusion Models:
+## Diffusion Models:
 [Diffusion Models](https://arxiv.org/abs/2209.00796), most often used for image and video generation, are built off of the concept of Diffusion, a concept brought from physics about structure being devolved into randomness. Instead of being trained to match an output to some given truth label, it acts to reconstruct a noisy input into its original state. This allows the model to be given an input of random noise with which it outputs a coherent image. The training of a diffusion model is broken into two parts, a forward diffusion process where noise is added to the data, and a reverse diffusion process where the model learns to remove the noise and get the original.
 
 ![A Simple Diagram of Diffusion Models](/images/diffusionmodel.png)
@@ -44,19 +44,19 @@ $$
 $$
 The inherent randomness that comes from the random distribution sampling in the reverse diffusion process allows new images to be generated, since slight permutations in the noise from early timesteps can lead to drastically different, although still structured, outputs by the end. The exact architecture of the main model $\epsilon_\theta$ is left up to the creator's decision, but [U-Nets](https://arxiv.org/abs/1505.04597) and [Transformers](https://arxiv.org/abs/2212.09748) are the most common choices. The exact details for image generation are not required for the rest of the blog, but the fact that the entire output is being processed together should be the main takeaway.
 
-## Classifier Guidance:
+### Classifier Guidance:
 To make a model that can create images based off of a given prompt, the diffusion process has to be steered. There are a number of different ways to do this, but for our purposes in this blog the most important and simplest will be classifier guidance. A classifier model $f_\phi(y|x_t,t)$ is trained to predict labels from some noisy data. This allows the diffusion model to be given some label to generate, where the classifier model acts to define whether it is getting closer to that label or not. This is done with the gradient of the model with respect to the input at some given timestep $t$, which is used to alter the predicted noise at that given time.
 $$
 \epsilon_\theta(x_t,t)=\epsilon_\theta(x_t,t)-\sqrt{1-\bar{\alpha}_t}\nabla_{x_t}\log f_\phi(y|x_t)
 $$
 
-## Classifier-Free Guidance:
+### Classifier-Free Guidance:
 This form of guidance is extended by Classifier-Free Guidance which uses a system of two models, one that denoises the input $\epsilon_\theta(z_t)$ and one that denoises the input $\epsilon_\theta(z_t,c)$ given some context $c$. At inference time, the outputs of these two models are combined using some guidance scale $w$, allowing for the importance of the given context to be dynamically controlled.
 $$
 \tilde{\epsilon}_\theta(z_t,c)=(1+w)\epsilon_\theta(z_t,c)-w\epsilon_\theta(z_t)
 $$
 
-# Diffusion-LM:
+## Diffusion-LM:
 At the very beginning of Diffusion Models being considered for Language Modeling, the most influential and foundational work was [Diffusion-LM](https://arxiv.org/abs/2205.14217). The model works to provide a simple way to reformat diffusion models to the language generation paradigm with two main changes, using word embeddings and rounding.
 
 ![The official diagram of Diffusion-LM](/images/diffusion-lm.png)
@@ -86,7 +86,7 @@ $$
 $$
 In order to get a real language model that can function as a hypothetical generation tool, the original paper uses a simple form of classifier guidance and another network that approximates the length of the output to be generated.
 
-# LLaDA:
+## LLaDA:
 Standing for Large Language Diffusion with mAsking, [LLaDA](https://arxiv.org/abs/2502.09992) takes the concepts set by Diffusion-LM even further. Instead of incentivizing the model to commit to a single word in the intermediate diffusion steps, LLaDA forces the model to commit. This is done with a new paradigm of diffusion model, a [Masked Diffusion Model](https://arxiv.org/abs/2406.04329) called the Mask Predictor $p_\theta(\cdot|x_t)$. 
 
 ![The official diagram of LLaDA and its training procedure](/images/LLaDA.png)
@@ -107,5 +107,5 @@ $$
 $$
 The ideas established here are extended even further by [MMaDA](https://arxiv.org/abs/2505.15809) to establish a multimodal model with a more complex training procedure, but the model won't be covered here since the main advancements made by the model are done by copying the best practices found in LLMs (chain-of-thought, reinforcement learning, etc.), so it would require a little more explanation than what is the focus for this blog.
 
-# Conclusion:
+## Conclusion:
 The lengths to which this concept of Diffusion Language modeling are untold and the theoretical improvements that the paradigm provides could present something that is even more dominant in the space than LLMs. Other styles of diffusion like [Diffusion Forcing](https://arxiv.org/abs/2407.01392) and [Block Diffusion](https://arxiv.org/abs/2503.09573) that combine the strengths of diffusion and autoregression are finding more potential, but I think the main strengths of the concept come in the differences it has with autoregression. Gemini Diffusion has proven that diffusion language models generate quicker than the standards set by LLMs, but the main improvement that I have in mind is the difference in how they process information. LLMs process an entire sequence, erase their memory of the sequence, and then process the entire sequence again. This makes the generation process inherently fractured, whereas diffusion language models allow the processing to happen in the same step that the entire generation of the sequence occurs, allowing fewer memory states to affect what is being output. It gets closer to an ideal interpretable model for natural language processing and the amount of innovation that can be had with such a new technology is unknown.
