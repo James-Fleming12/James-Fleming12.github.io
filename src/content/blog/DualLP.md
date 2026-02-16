@@ -77,7 +77,7 @@ $$
 
 If we assume that this system has no solutions, then we know that there has to be some vector $[x;\lambda]\geq 0$ such that $Ax-\lambda b\geq 0$ and $c^Tx-\lambda z<0$, which can be rewritten as $Ax\geq\lambda b$ and $c^Tx<\lambda z$. We can break this up into cases based on the value of $\lambda$ to show that this is not possible.
 
-In the case where $\lambda>0$, we can show a contradiction by dividing by $\lambda$, giving $A(x/\lambda)=b$ and $c^T(x/\lambda)<z$. The first inequality shows that $(x/\lambda)$ is feasible for the primal, which combined with the second would show that there is a feasible $x$ that leads to a minimum strictly less than $z$, which leads to a contradiction because we defined $z$ as the minimum.
+In the case where $\lambda>0$, we can show a contradiction by dividing by $\lambda$, giving $A(x/\lambda)\geq b$ and $c^T(x/\lambda)<z$. The first inequality shows that $(x/\lambda)$ is feasible for the primal, which combined with the second would show that there is a feasible $x$ that leads to a minimum strictly less than $z$, which leads to a contradiction because we defined $z$ as the minimum.
 
 In the case where $\lambda=0$, this implies that $Ax\geq 0$ and $c^Tx<0$. We can add this point to the optimal $x^*$ to get $A(x+x^*)=Ax+Ax^*\geq b+0$ and $c^T(x+x^*)=c^Tx+c^Tx^*=(\text{some value }<0) + c^Tx^*$, which means that $(x+x^*)$ would be a feasible solution leading to a lower value than $z$, which again leads to a contradiction.
 
