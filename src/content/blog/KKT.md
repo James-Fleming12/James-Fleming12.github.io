@@ -87,9 +87,9 @@ $$
 Now consider a problem where strong duality does hold, i.e. one where $f(x^*)=F(\lambda^*,\mu^*)$. We can follow the same chain of logic to prove that $0\leq\sum^m_{i=1}\mu^*_jh_j(x^*)$, and since we know that $\mu^*_i\geq 0$ and $h_j(x^*)\leq 0$, the only way to make this inequality hold is for each element of the sum to be equal to $0$, thus proving Complementary Slackness for our minima.
 
 ## Regularity Conditions:
-Along with the strong duality condition for Complementary Slackness, we also need a regularity condition to guarantee that the feasible set defined by the inequality constraints is well-behaved so that our stationarity condition is logical. There are a number of regularity conditions for this task, but one of the most common is Slater's Condition, which states that $f$ is convex, all $g_i$ are convex, all $h_j$ are linear, and there exists some $\tilde{x}$ such that $g_i(\tilde{x})<0$ and $h_j(\tilde{x})=0$. These conditions guarantee that the feasible set is well behaved (the first three guaranteeing that the feasible set is convex and the fourth ensuring the feasible set has an interior), and it also guarantees strong duality so it often is also used to prove complementary slackness in cases where it applies. Since only local strong duality is needed for complementary slackness, other regularity conditions exist for other problems that are not as simple.
+Along with the strong duality condition for Complementary Slackness, we also need a regularity condition to guarantee that the feasible set defined by the inequality constraints is well-behaved so that our stationarity condition is logical. There are a number of regularity conditions for this task, but one of the most common is Slater's Condition, which states that $f$ is convex, all $g_i$ are convex, all $h_j$ are affine, and there exists some $\tilde{x}$ such that $g_i(\tilde{x})<0$ and $h_j(\tilde{x})=0$. These conditions guarantee that the feasible set is well behaved (the first three guaranteeing that the feasible set is convex and the fourth ensuring the feasible set has an interior), and it also guarantees strong duality so it often is also used to prove complementary slackness in cases where it applies. Since only local strong duality is needed for complementary slackness, other regularity conditions exist for other problems that are not as simple.
 
-To prove that this leads to the existence of dual variables that satisfy stationarity, we first construct a set $\mathcal{A}$ of all attainable objective and constraint values. Since the $f$ and $g_i$ are convex and $h_j$ are linear (can not make the set nonconvex), we know $\mathcal{A}$ is convex.
+To prove that this leads to the existence of dual variables that satisfy stationarity, we first construct a set $\mathcal{A}$ of all attainable objective and constraint values. Since the $f$ and $g_i$ are convex and $h_j$ are affine (can not make the set nonconvex), we know $\mathcal{A}$ is convex.
 $$
 \mathcal{A}=\{(u,v,w)|\exists x,f(x)\leq u,g_i(x)=v_i,h_j(x)\leq w_j\}
 $$
@@ -118,3 +118,12 @@ $$
 \nabla f(x^*)+\sum^m_{i=1}\lambda_i^*\nabla g_i(x^*)+\sum^p_{j=1}\mu^*_j\nabla h_j(x^*)=0
 \end{gather*}
 $$
+
+## Sufficient Condition:
+This was all to set up the fact that under certain regularities we know that any optimum will $(x^*,\lambda^*,\mu^*)$ need to satisfy the KKT conditions, but we can also prove that under these same conditions ($f$ and $g_i$ being convex and $h_j$ being affine) we know that any tuple satisfying the conditions has to be the optimum.
+
+Consider a tuple $(x^*,\lambda^*,\mu^*)$ that satisfy the KKT conditions. We have that $x^*$ is primal feasible and $\lambda^*,\mu^*$ are dual feasible. Using these conditions we already proved that stationarity holds, so we can derive the following.
+$$
+F(\lambda^*,\mu^*)=L(x^*,\lambda^*,\mu^*)=f(x^*)
+$$
+Combining this with weak duality, which states that $f(x^*\geq F(\lambda^*,\mu^*))$, we see that $\lambda^*,\mu^*$ maximized $F$ and that strong duality holds. Since $\lambda^*,\mu^*$ maximized $F$, the pair is the solution to the dual problem. Since strong duality holds, we can then deduce that $x^*$ is also our optimum, thus showing that any points satisfying the KKT conditions under this setup would be optimum.
