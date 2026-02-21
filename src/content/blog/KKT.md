@@ -59,7 +59,7 @@ Since this adds inequality constraints to the previous problem, we can treat the
 
 If the constraint is active, then the inequality constraint restricts $dx$ like an equality constraint, except we are allowed to move inwards as well. This leads to the same $\nabla f+\mu\nabla h=0$ condition as before (under certain conditions on the constraint functions themselves which stop things like cusps from forming), which can also be extended to a span in the same way. The only change is that we need $\mu_j\geq0$. Since the constraint still allows stepping into the feasible set, we need both gradients to point in opposite directions, so $\nabla f=-\mu\nabla h$.
 
-If the constraint is inactive, then the constraint shouldn't influence the set of possible $dx$ since we can move in any direction locally. The only way to make $\nabla f+\mu\nabla h=0$ true while allowing every $dx$ is to force $\mu=0$, which turns it into the standard $\nabla f=0$. Since we either want to have a constraint be active, meaning $h_j(x)=0$, or we want $u_j=0$, we can derive the property that we want $\mu_jh_j(x^*)=0$.
+If the constraint is inactive, then the constraint shouldn't influence the set of possible $dx$ since we can move in any direction locally. The only way to make $\nabla f+\mu\nabla h=0$ true while allowing every $dx$ is to force $\mu=0$, which turns it into the standard $\nabla f=0$. Since we either want to have a constraint be active, meaning $h_j(x)=0$, or we want $u_j=0$, we can derive the property that we want $\mu_jh_j(x^*)=0$, called Complementary Slackness. While the idea behind it is always true, the simplified version that acts in the equation needs certain conditions to stay correct since certain problem formulations can cause multipliers of nonactive constraints to still need to be nonzero.
 
 Combining the properties of these two and the added feasibility requirements, we get the following conditions for critical points of the problem.
 $$
@@ -68,5 +68,53 @@ $$
 g_i(x^*)=0\text{ and }h_j(x^*)\leq 0\\
 \mu^*_j\geq 0\\
 \mu^*_jh_j(x^*)=0
+\end{gather*}
+$$
+
+## Complementary Slackness:
+One of the requirements for using KKT conditions is in how well-behaved the inequality constraint lagrange multipliers are, which allow the Complementary Slackness property $\mu^*_jh_j(x^*)=0$ to hold. This comes in the form of whether the primal and dual have strong duality (technically only requiring local strong duality, which will be important for understanding the purpose of later conditions). Consider a problem where strong duality does not hold. This means that we know there exists some dual gap $\epsilon$ between the minimum of the primal and dual problems.
+$$
+f(x^*)=F(\lambda^*,\mu^*)+\epsilon
+$$
+By definition of the dual function $F$ we can simplify this to bound the values of the constraint variables. Since we know that any primal optimum $x^*$ will lead to $g_i(x^*)=0$, we can isolate the sum of all $\mu_jh_j$ and show that it can be nonzero, disproving Complementary Slackness for the minima.
+$$
+\begin{gather*}
+F(\lambda^*,\mu^*)=\inf_x(L,\lambda^*,\mu^*)\leq L(x^*,\lambda^*,\mu^*)\\
+f(x^*)-\epsilon\leq f(x^*)+\sum\lambda^*_ig_i(x^*)+\sum\mu^*_jh_j(x^*)\\
+-\epsilon\leq\sum\mu^*_jh_j(x^*)
+\end{gather*}
+$$
+Now consider a problem where strong duality does hold, i.e. one where $f(x^*)=F(\lambda^*,\mu^*)$. We can follow the same chain of logic to prove that $0\leq\sum^m_{i=1}\mu^*_jh_j(x^*)$, and since we know that $\mu^*_i\geq 0$ and $h_j(x^*)\leq 0$, the only way to make this inequality hold is for each element of the sum to be equal to $0$, thus proving Complementary Slackness for our minima.
+
+## Regularity Conditions:
+Along with the strong duality condition for Complementary Slackness, we also need a regularity condition to guarantee that the feasible set defined by the inequality constraints is well-behaved so that our stationarity condition is logical. There are a number of regularity conditions for this task, but one of the most common is Slater's Condition, which states that $f$ is convex, all $g_i$ are convex, all $h_j$ are linear, and there exists some $\tilde{x}$ such that $g_i(\tilde{x})<0$ and $h_j(\tilde{x})=0$. These conditions guarantee that the feasible set is well behaved (the first three guaranteeing that the feasible set is convex and the fourth ensuring the feasible set has an interior), and it also guarantees strong duality so it often is also used to prove complementary slackness in cases where it applies. Since only local strong duality is needed for complementary slackness, other regularity conditions exist for other problems that are not as simple.
+
+To prove that this leads to the existence of dual variables that satisfy stationarity, we first construct a set $\mathcal{A}$ of all attainable objective and constraint values. Since the $f$ and $g_i$ are convex and $h_j$ are linear (can not make the set nonconvex), we know $\mathcal{A}$ is convex.
+$$
+\mathcal{A}=\{(u,v,w)|\exists x,f(x)\leq u,g_i(x)=v_i,h_j(x)\leq w_j\}
+$$
+Given a primal optimal point and an objective value $p^*=f(x^*)$, we can define a point $(p^*,0,0)$ that is on the boundary of $\mathcal{A}$. Since the point is on the boundary of the objective values we know that it is on the boundary of the set itself. Since $x^*$ is feasible we know that there exists some point in the set $(p^*,0,\text{some value }\leq 0)$ and since we defined $\mathcal{A}$ as all values above any $(f(x),g_i(x),h_j(x))$, we know that $(p^*,0,0)$ exists in the set.
+
+Since $\mathcal{A}$ is convex, by the Supporting Hyperplane Theorem we know that there exists some non-zero vector $(\alpha,\lambda,\mu)$  such that for all $(u,v,w)\in\mathcal{A}$ the following applies.
+$$
+\begin{gather*}
+\alpha u+\sum\lambda_iv_i+\sum\mu_jw_j\geq\alpha p^*+\sum\lambda_i(0)+\sum\mu_j(0)\\
+\alpha f(x)+\sum\lambda_ig_i(x)+\sum\mu_jh_j(x)\geq\alpha f(x^*)
+\end{gather*}
+$$
+In order to work with this statement further, we need $\alpha>0$ so that we know it makes some statements about $f(x)$. We can do this through contradiction by supposing that $\alpha=0$. The inequality then becomes $\sum\lambda_ig_i(x)+\sum\mu_jh_j(x)\geq 0$ for all $x$. We can then apply the point $\tilde{x}$ from the condition statement, which by definition has $g_i(\tilde{x})=0$ and $h_j(\tilde{x})<0$. This reduces the sum to $\sum\mu_jh_j(\tilde{x})\geq 0$ and since we know the sum is negative, this leads to a contradiction, thus $\alpha>0$.
+
+Since we know $\alpha$ is non-zero, we can divide by $\alpha$ and see that the left hand side becomes the lagrangian with $\lambda^*_i=\lambda_i/\alpha$ and $\mu^*_j=\mu_j/\alpha$.
+$$
+\begin{gather*}
+f(x)+\sum\lambda^*_ig_i(x)+\sum\mu^*_jh_j(x)\geq f(x^*)\\
+L(x,\lambda^*,\mu^*)\geq f(x^*)
+\end{gather*}
+$$
+Since we know that Slater's Condition guarantees strong duality, and thus Complementary Slackness, we know that $f(x^*)=L(x^*,\lambda^*,\mu^*)$, and since we know this inequality holds for all $x$, we know that $L(x^*,\lambda^*,\mu^*)$ is the minimum of the lagrangian. By the first order necessary condition of optimality to hold, we need the following, which proves stationarity and the existence of the dual variables in $(\lambda^*,\mu^*)$.
+$$
+\begin{gather*}
+\nabla_xL(x^*,\lambda^*,\mu^*)=0\\
+\nabla f(x^*)+\sum^m_{i=1}\lambda_i^*\nabla g_i(x^*)+\sum^p_{j=1}\mu^*_j\nabla h_j(x^*)=0
 \end{gather*}
 $$
