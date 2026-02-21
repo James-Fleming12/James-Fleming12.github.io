@@ -51,13 +51,13 @@ L(x,\lambda)=f(x)+\sum^m_{i=1}\lambda_ig_i(x)\\
 $$
 
 ## KKT Conditions:
-The KKT Conditions act as an analog to this method for constrained problems that also have inequality constraints. Consider an optimization problem of the following form, with an added set of inequality constraint functions $h_j(x)$.
+The KKT Conditions act as an analog to this method for constrained problems that also have inequality constraints as long as the inequalities are well-behaved. Consider an optimization problem of the following form, with an added set of inequality constraint functions $h_j(x)$.
 $$
 \min_x f(x)\quad\text{s.t.}\quad g_i(x)=0,h_j(x)\leq 0
 $$
 Since this adds inequality constraints to the previous problem, we can treat the equality constraints basically the same. The inequality constraints allow a feasible point to either be on the surface of the inequalities or inside, meaning we can break down the derivation into whether a point and constraint are active, meaning $h_j(x)=0$, or inactive, meaning $h_j(x)<0$.
 
-If the constraint is active, then the inequality constraint restricts $dx$ like an equality constraint, except we are allowed to move inwards as well. This leads to the same $\nabla f+\mu\nabla h=0$ condition as before, which can also be extended to a span in the same way. The only change is that we need $\mu_j\geq0$. Since the constraint still allows stepping into the feasible set, we need both gradients to point in opposite directions, so $\nabla f=-\mu\nabla h$.
+If the constraint is active, then the inequality constraint restricts $dx$ like an equality constraint, except we are allowed to move inwards as well. This leads to the same $\nabla f+\mu\nabla h=0$ condition as before (under certain conditions on the constraint functions themselves which stop things like cusps from forming), which can also be extended to a span in the same way. The only change is that we need $\mu_j\geq0$. Since the constraint still allows stepping into the feasible set, we need both gradients to point in opposite directions, so $\nabla f=-\mu\nabla h$.
 
 If the constraint is inactive, then the constraint shouldn't influence the set of possible $dx$ since we can move in any direction locally. The only way to make $\nabla f+\mu\nabla h=0$ true while allowing every $dx$ is to force $\mu=0$, which turns it into the standard $\nabla f=0$. Since we either want to have a constraint be active, meaning $h_j(x)=0$, or we want $u_j=0$, we can derive the property that we want $\mu_jh_j(x^*)=0$.
 
