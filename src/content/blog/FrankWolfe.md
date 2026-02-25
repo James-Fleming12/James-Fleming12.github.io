@@ -199,3 +199,81 @@ h^{(k+1)}\leq\frac{2C_f}{k+3}
 $$
 
 ## Frank-Wolfe Non-Convex Convergence:
+A convergence rate for Frank-Wolfe has also been derived in [non-convex](https://arxiv.org/abs/1607.00345) settings. Since we're now dealing with non-convex functions, we need to describe convergence in terms other than our original optimality gap. Instead, we use the Frank-Wolfe gap $g_t$. This describes how much the objective can be decreased by moving towards an element in the feasible set, which allows $g_t=0$ to act as an analogous term to $\|\nabla f(x)\|=0$ in our setting.
+$$
+g_t=\max_{s\in\Omega}\left<s-x^{(t)},-\nabla f(x^{(t)})\right>
+$$
+Since we're in a non-convex setting, we don't have the guarantee that the iterates always improve, so we need to denote the convergence in terms of the minimal Frank-Wolfe gap $\tilde{g}_t=\min_{0\leq k\leq t}$ after $t$ iterations. The minimal Frank-Wolfe gap on an L-Smooth, potentially non-convex, $f$ over a colmpact convex set $\Omega$ after $t$ iterations can be bounded by $O(\frac{1}{\sqrt{t}})$ as shown below.
+$$
+\begin{gather*}
+\tilde{g}_t\leq\frac{\max\{2h_0,C\}}{\sqrt{t+1}}\quad t\geq 0\\
+h_0=f(x^{(0)})-\min_{x\in\mathcal{M}}f(x)
+\end{gather*}
+$$
+$h_0$ denotes the initial suboptimality and $C$ is some constant that satisfies $C\geq C_f$ that is determined by our stepsize. If a line-search algorithm is used to find the optimal step-size, then $C=C_f$. If an adaptive stepsize is chosen $\min\{\frac{g_t}{C},1\}$ (will be derived later), then $C\geq C_f$.
+
+The proof follows the same general form of using the properties of $f$ to derive a recursive bound and then using it to prove global convergence properties. We can first derive a more practical form of the L-Smooth descent lemma using the definition of $C_f$, which we know is finite from $f$ being L-Smooth and $\Omega$ being compact.
+$$
+\begin{gather*}
+\frac{2}{\gamma^2}[f(y)-f(x)-\left<\nabla f(x),y-x\right>]\leq C_f\\
+f(y)\leq f(x)+\left<\nabla f(x),y-x\right>+\frac{\gamma^2}{2}C_f
+\end{gather*}
+$$
+
+We can then define $x_\gamma=x^{(t)}+\gamma d_t$ (the potential next step without a specific $\gamma$) and $d_t=s^{(t)}-x^{(t)}$ (the direction of the step) to get the bound in terms of our algorithm. We can also further simplify by using the definition of $g_t$ as an upper bound of the middle term and replacing $C_f$ with our previously defined $C$.
+$$
+\begin{gather*}
+f(x_\gamma)\leq f(x^{(t)})+\gamma\left<\nabla f(x^{(t)}),d_t\right>+\frac{\gamma^2}{2}C_f\quad\forall\gamma\in[0,1]\\
+f(x_\gamma)\leq f(x^{(t)})-\gamma g_t+\frac{\gamma^2}{2}C
+\end{gather*}
+$$
+To minimize this bound on $f(x_\gamma)$, we can choose a stepsize $\gamma^*=\min\{\frac{g_t}{C},1\}$. This breaks the decrease of the objective at each step into a piecewise based on whether $g_t\leq C$, leading to a stepsize of $\frac{g_t}{C}$, or $g_t>C$, leading to a stepsize of $1$. We can also replace the piecewise with an indicator function as shown below.
+$$
+\begin{gather*}
+f(x^{(t+1)})\leq f(x^{(t)})-\begin{cases}\frac{g^2_t}{2c}&\text{if }g_t\leq C\\g_t-\frac{C}{2}&\text{if }g_t>C\end{cases}\\
+f(x^{(t+1)})\leq f(x^{(t)})-\min\left\{\frac{g_t^2}{2C},g_t-\frac{C}{2}\mathbb{1}_{\{g_t>C\}}\right\}
+\end{gather*}
+$$
+In cases where $g_t>C$, we have $\min\left\{\frac{g_t^2}{2C},g_t-\frac{C}{2}\right\}$. We can define the difference between the two as a function $f(g_t)=\frac{g^2_t}{2C}-(g_t-\frac{C}{2})=\frac{g^2_t-2Cg_t+C^2}{2C}=\frac{(g_t-C)^2}{2C}$. Since we know that $(g_t^2-C)^2\geq 0$, we know that the difference is positive so $\frac{g_t^2}{2C}\geq g_t-\frac{C}{2}$, thus the correct min is chosen. In cases where $g_t\leq C$, we have $\min\left\{\frac{g_t^2}{2C},g_t\right\}$. We can first divide by $g_t$, which we know is positive, and get $\min\{\frac{g_2}{2C},1\}$. Since $g_t\leq C$, we know $\frac{g_t}{2C}\leq \frac{1}{2}$, thus the correct min is chosen.
+
+Since this forms a recursive relationship, we can somver over $t$ iterations since it forms a telescoping sum. We can then simplify by replacing the sum over decreaes with the minimal gap $\tilde{g}_t$ since we know that each term is always positive, so replacing the subtracted terms with a smaller subtracted term keeps the $\leq$ bound.
+$$
+\begin{gather*}
+f(x^{(t+1)})\leq f(x^{(0)})-\sum^t_{k=0}\min\left\{\frac{g_k^2}{2C},g_k-\frac{C}{2}\mathbb{1}_{\{g_k>C\}}\right\}\\
+f(x^{(t+1)})\leq f(x^{(0)})-(t+1)\min\left\{\frac{\tilde{g}_t^2}{2C},\tilde{g}_t-\frac{C}{2}\mathbb{1}_{\{\tilde{g}_t>C\}}\right\}
+\end{gather*}
+$$
+This means we can bound $\tilde{g}_t$ with these, specifically using the fact that $f(x^{(0)})-f(x^{(t+1)})\leq f(x^{(0)})-f(x^*)=h_0$.
+$$
+\tilde{g}_t\leq\begin{cases}\frac{h_0}{t+1}+\frac{C}{2}&\tilde{g}_t>C\\\sqrt{\frac{2h_0C}{t+1}}&\tilde{g}_t\leq C\end{cases}
+$$
+Since we're trying to bound $\tilde{g}_t$, we would like to derive a new set of conditions for the piecewise to get rid of the circular logic. While an equivalent condition is hard to find, we can find a set of conditions that guarantees that the bounds hold. By simple algebraic manipulation, we can know that $\tilde{g}_t>C$ implies $t+1\leq \frac{2h_0}{C}$. If $\tilde{g}_t\leq C$, so any $\tilde{g}_t$ has to be cateogized in the first case. If we have some $\tilde{g}_t\leq C$ and $t+1\leq\frac{2h_0}{C}$, we can show that the first bound also holds.
+$$
+\tilde{g}_t\leq C\leq \frac{C}{2}+\frac{C}{2}=
+\frac{h_0}{\frac{2h_0}{C}}+\frac{C}{2}\leq\frac{h_0}{t+1}+\frac{C}{2}
+$$
+Thus we can rewrite the conditions based on this.
+$$
+\tilde{g}_t\leq\begin{cases}\frac{h_0}{t+1}+\frac{C}{2}&\text{if }t+1\leq\frac{2h_0}{C}\\\sqrt{\frac{2h_0C}{t+1}}&\text{otherwise}\end{cases}
+$$
+Since we have two different convergence rates based on these conditions, we need to get them into a similar form to provide an overall convergence rate. We can first manipulate the first bound to get it into a workable form.
+$$
+\begin{gather*}
+\frac{h_0}{t+1}+\frac{C}{2}=\frac{h_0}{\sqrt{t+1}}\left(\frac{1}{\sqrt{t+1}}+\frac{C}{2h_0}\sqrt{t+1}\right)\\
+\frac{h_0}{t+1}+\frac{C}{2}\leq\frac{h_0}{\sqrt{t+1}}\left(\frac{1}{\sqrt{t+1}}+\sqrt{\frac{C}{2h_0}}\right)
+\end{gather*}
+$$
+In order to work with this, we need to prove that $h_0>\frac{C}{2}$ if $t+1\leq\frac{2h_0}{C}$. Consider the case where the condition holds and $h_0\leq\frac{C}{2}$. This would lead to $t+1\leq \frac{2h_0}{C}\leq \frac{2}{C}\cdot\frac{C}{2}=1$, which leads to a contradiction since we know that $t\geq 0$.
+
+Using this fact, we can know that $\frac{C}{2}\cdot\frac{1}{h_0}<1$, so we can substitute and simplify, deriving our desired result.
+$$
+\frac{h_0}{t+1}+\frac{C}{2}\leq\frac{h_0}{\sqrt{t+1}}\left(\frac{1}{\sqrt{t+1}}+1\right)\leq\frac{2h_0}{\sqrt{t+1}}
+$$
+This leaves us with the following two bounds.
+$$
+\tilde{g}_t\leq\begin{cases}\frac{2h_0}{\sqrt{t+1}}&\text{if }t+1\leq\frac{2h_0}{C}\\\frac{\sqrt{2h_0C}}{\sqrt{t+1}}&\text{otherwise}\end{cases}
+$$
+To further simplify, we can show that both bounds can have their numerators be replaced with $\max\{2h_0,C\}$. In the first case, since we know that $h_0>\frac{C}{2}$, we know that $2h_0>C$, which derives our desired numerator $2h_0=\max\{2h_0,C\}$. For the second, we know that since both $h_0$ and $C$ are nonnegative we have $\sqrt{2h_0C}\leq\max\{2h_0,C\}$ (given some arbitrary $a,b\geq 0$ and that $a\geq b$, we know that $\sqrt{ab}\leq\sqrt{a^2}=a$). Replacing the numerators then combines the conditions and derives our final result, proving the theorem.
+$$
+\tilde{g}_t\leq\frac{\max \{2h_0,C\} }{\sqrt{t+1}}
+$$
