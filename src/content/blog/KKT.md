@@ -79,7 +79,7 @@ $$
 By definition of the dual function $F$ we can simplify this to bound the values of the constraint variables. Since we know that any primal optimum $x^*$ will lead to $g_i(x^*)=0$, we can isolate the sum of all $\mu_jh_j$ and show that it can be nonzero, disproving Complementary Slackness for the minima.
 $$
 \begin{gather*}
-F(\lambda^*,\mu^*)=\inf_x(L,\lambda^*,\mu^*)\leq L(x^*,\lambda^*,\mu^*)\\
+F(\lambda^*,\mu^*)=\inf_xL(x,\lambda^*,\mu^*)\leq L(x^*,\lambda^*,\mu^*)\\
 f(x^*)-\epsilon\leq f(x^*)+\sum\lambda^*_ig_i(x^*)+\sum\mu^*_jh_j(x^*)\\
 -\epsilon\leq\sum\mu^*_jh_j(x^*)
 \end{gather*}
