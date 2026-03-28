@@ -96,7 +96,7 @@ To prove that $y\rightarrow y^*$, we can first prove that the dual problem is st
 $$
 \begin{gather*}
 \nabla^2 g(y)=-A(\nabla^2f(x(y)))^{-1}A^T\preceq -\frac{1}{m}AA^T\\
-\nabla^2g(y)\succeq-\frac{\sigma_\text{min}(AA^T)}{m}I
+\nabla^2g(y)\preceq-\frac{\sigma_\text{min}(AA^T)}{m}I
 \end{gather*}
 $$
 Since $g(y)$ is strongly concave, we know that it satisfies the PL-Condition, which we can use to write the following inequality which along with $g(y^{(t)})\rightarrow g(y^*)$ proves that $y\rightarrow y^*$.
