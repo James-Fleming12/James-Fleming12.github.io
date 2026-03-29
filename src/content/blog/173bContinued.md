@@ -119,11 +119,11 @@ y^{(t+1)}=y^{(t)}+\rho(Ax^{(t+1)}-b)
 $$
 
 ### Convergence:
-The convergence theorem for ALM relies on converging to a local minimum, contrasting with the other two focusing on global minimums. Assume $f(x)$ and $Ax=b$ are twice continuously differentiable, $x^*$ is a local minimum satisfying second-order sufficient condition (the Hessian of the Lagrangian is positive definite at $x^*$), and $A$ has full rank. With these we know that there exists a threshold $\hat{\rho}$ such that for all $\rho>\hat{\rho}$ we know $x^{(t)}\rightarrow x^*$, $y^{(t)}\rightarrow y^*$, and the convergence of $y^{(t)}$ is linear with a ratio proportional to $\frac{1}{\rho}$. A lot of the proof solely cares about the existence of a $\rho$, but in practical applications the $\rho$ that works best is still reasonable.
+The convergence theorem for ALM relies on converging to a local minimum, contrasting with the other two focusing on global minimums. Assume $f(x)$ and $Ax=b$ are twice continuously differentiable, $x^*$ is a local minimum satisfying second-order sufficient condition for the Lagrangian, and $A$ has full rank. With these we know that there exists a threshold $\hat{\rho}$ such that for all $\rho>\hat{\rho}$ we know $x^{(t)}\rightarrow x^*$, $y^{(t)}\rightarrow y^*$, and the convergence of $y^{(t)}$ is linear with a ratio proportional to $\frac{1}{\rho}$. A lot of the proof solely cares about the existence of a $\rho$, but in practical applications the $\rho$ that works best is still reasonable.
 
 The proof follows by first ensuring there is some $\rho$ that can make $L_\rho$ convex, using it to guarantee that the algorithm's iterations are well-defined, and then proving the linear convergence rate by relating iterates with a contraction.
 
-By definition of $x^*$ satisfying second order sufficient conditions, we know that $\nabla^2L$ is positive definite on the null space of $A$. By Finsler's Lemma, we know that for large enough $\rho$ the augmented matrix (which forms the hessian of the augmented lagrangian) is positive definite everywhere, which means the augmented lagrangian is convex everywhere for a large enough $\rho$.
+By definition of $x^*$ satisfying second order sufficient conditions, we know that $\nabla^2L(x^*,y^*)$ is positive definite on the null space of $A$. By Finsler's Lemma, we know that for large enough $\rho$ the augmented matrix (which forms the hessian of the augmented lagrangian) is positive definite everywhere, which means the augmented lagrangian is convex everywhere for a large enough $\rho$.
 $$
 \nabla^2_{xx}L_\rho(x^*,y^*)=\nabla^2_{xx}L(x^*,y^*)+\rho A^TA
 $$
