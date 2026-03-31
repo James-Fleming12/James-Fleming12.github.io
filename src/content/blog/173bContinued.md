@@ -88,7 +88,7 @@ g(y^{(k+1)})-g(y^{(k)})\geq\alpha\|\nabla g\|^2-\frac{L\alpha^2}{2}\|\nabla g\|^
 $$
 This shows that $g(y^{(t+1)})>g(y^{(t)})$ if we have $\alpha(1-\frac{\alpha L}{2})>0$, which simplifies to $\alpha<\frac{2}{L}$. With this step-size we know that as long as $\|\nabla g(y^{(t)})\|\neq 0$, we are making constant progress on reaching optimality. This also proves $g(y^{(t)})\rightarrow g(y^*)$ which will be used later.
 
-Since $g(y)$ is bounded from above by the primal optimal value $p^*$, the sum of the increases must also be bounded since it forms a telescoping sum, which is detailed below. The only way for this to be the case is if $\|\nabla g(y^{(t)})\|\rightarrow 0$, which proves that primal faesibility is reached.
+Since $g(y)$ is bounded from above by the primal optimal value $p^*$, the sum of the increases must also be bounded since it forms a telescoping sum, which is detailed below. Since this is still running a standard gradient descent algorithm we know that the iterates will have non-increasing objective values, so the only way for this to be the case is if $\|\nabla g(y^{(t)})\|\rightarrow 0$ (since $g(y^{(t+1)})-g(y^{(t)})\approx\alpha\|\nabla g(y^{(t)})\|^2$), which proves that primal faesibility is reached.
 $$
 \sum^\infty_{k=0}g(y^{(t+1)})-g(y^{(t)})\leq p^*-g(y^{(0)})<\infty
 $$
