@@ -232,6 +232,9 @@ B^{(t+1)}=\left(I-\frac{y^{(t)}(s^{(t)})^T}{(y^{(t)})^Ts^{(t)}}\right)B^{(t)}\le
 B^{(t+1)}=B^{(t)}+\frac{(y-B^{(t)}s)y^T+y(y-B^{(s)}s)^T}{y^Ts}-\frac{s^T(y-B^{(t)}s)}{(y^Ts)^2}yy^T
 \end{gather*}
 $$
+Using the first definition, we can see that under certain conditions both terms are either positive-definite or positive-semidefinite. If $y^Ts>0$, then we know that the second term is PSD, and we can see that the first term inherits the definiteness of $B^{(t)}$ through some case analysis. This means that if we have a positive definite $B^{(t)}$ and $y^Ts>0$, then we have a positive definite $B^{(t+1)}$, which means we can always have a descent direction for our Quasi-Newton step. The condition $y^Ts>0$ can be trivially guaranteed by using a Backtracking Line-Search stepsize, so this can apply always in the method. 
+
+This is the main distinction between DFP and previous methods, acting as the main difference in terms of convergence. Although theoretically an approximation that is always positive definite would seem bad, as it can lie about the curvature of the function if the real hessian is indefinite or even negative definite, it ends up having better convergence than when the approximation is as realistic as possible. This gives the method much better convergence results compared to PSB, although the bottleneck of being limited in how much it can change the hessian still keeps it slightly slower than SR1.
 
 ### Derivation:
 We again use the lagrangian $L(B,\lambda)$ where we scale the objective by $\frac{1}{2}$ to simplify the notation of the final update.
