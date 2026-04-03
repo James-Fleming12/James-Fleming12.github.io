@@ -293,13 +293,13 @@ $$
 We can then divide both sides by $t>0$ and take the limit as $t\rightarrow0^+$ to turn both sides of the inequality into statements about the derivatives of each function.
 $$
 \begin{gather*}
-\lim_{t\rightarrow0^+}\frac{\phi(x+ty)-\phi(x)}{t}\geq \lim_{t\rightarrow0^+}\frac{f(x+ty,z^*)-f(x,z^*)}{t}\\
-\phi^\prime(x;y)\geq\left<\nabla_xf(x,z^*),y\right>
+\liminf_{t\rightarrow0^+}\frac{\phi(x+ty)-\phi(x)}{t}\geq \lim_{t\rightarrow0^+}\frac{f(x+ty,z^*)-f(x,z^*)}{t}\\
+\liminf_{t\rightarrow0^+}\frac{\phi(x+ty)-\phi(x)}{t}\geq \left<\nabla_xf(x,z^*),y\right>
 \end{gather*}
 $$
-Since we know that this inequality holds for any $z^*\in Z_0(x)$, we know that it must hold for the maximizer among them, thus proving the lower bound we desired.
+Since this applies for all $z^*\in Z_0(x)$, we know it applies for the maximizer among them, completing the lower bound section of the proof.
 $$
-\phi^\prime(x;y)\geq\max_{z\in Z_0(x)}\left<\nabla_xf(x,z),y\right>
+\liminf_{t\rightarrow0^+}\frac{\phi(x+ty)-\phi(x)}{t}\geq\max_{z\in Z_0(x)}\left<\nabla_xf(x,z),y\right>
 $$
 The proof for the upper bound follows a similar case of manipulation of definitions with some use of the fact that $Z$ is a closed set. By definition of the maximum function, we know that the following apply for some $t>0$ and $z_t\in Z_0(x+ty)$.
 $$
@@ -325,15 +325,18 @@ $$
 We can then take the limit as $j\rightarrow\infty$ which leads to $f(x,z_0)\geq f(x,z)$, which along with the fact that $f$ is continuous leads to $z_0$ being the maximizer at $x$, so $z_0\in Z_0(x)$. This lets us take the limit to derive an inequality that we can use to derive the desired bound.
 $$
 \begin{gather*}
-\frac{\phi(x+t_{k_j}t)-\phi(x)}{t_{k_j}}\leq\left<\nabla_xf(x+\theta_{k_j}t_{k_j}y,z_{t_{k_j}})\right>\\
-\lim_{j\rightarrow\infty}\frac{\phi(x+t_{k_j}t)-\phi(x)}{t_{k_j}}=\lim_{t\rightarrow0^+}\frac{\phi(x+ty)-\phi(x)}{t}\leq\left<\nabla_xf(x,z_0),y\right>
+\frac{\phi(x+t_{k_j}y)-\phi(x)}{t_{k_j}}\leq\left<\nabla_xf(x+\theta_{k_j}t_{k_j}y,z_{t_{k_j}})\right>\\
+\limsup_{j\rightarrow\infty}\frac{\phi(x+t_{k_j}y)-\phi(x)}{t_{k_j}}\leq\left<\nabla_xf(x,z_0),y\right>
 \end{gather*}
 $$
-Since $z_0\in Z_0(x)$, we know that this inequality is lower bounded by the maximizer of any $z\in Z_0(x)$, leading to the desired upper bound.
+As this applies for every convergent subsequence, we know that the limit superior of the sequence itself must be bounded by the maximum among the individual bounds, completing the upper bound section of the proof.
 $$
-\phi^\prime(x;y)\leq\max_{z\in Z_0(x)}\left<\nabla_xf(x,z),y\right>
+\limsup_{t\rightarrow0^+}\frac{\phi(x+ty)-\phi(x)}{t}\leq\max_{z\in Z_0(x)}\left<\nabla_xf(x,z),y\right>
 $$
-Now that we have proven $\phi^\prime(x;y)\geq\max_{z\in Z_0(x)}\left<\nabla_xf(x,z),y\right>$ and $\phi^\prime(x;y)\leq\max_{z\in Z_0(x)}\left<\nabla_xf(x,z),y\right>$, we know that $\phi^\prime(x;y)=\max_{z\in Z_0(x)}\left<\nabla_xf(x,z),y\right>$, thus proving the theorem.
+Since we know that both the $\limsup$ of the sequence is upper bounded by the same term that the $\liminf$ is lower bounded by, we know that the $\limsup$ and $\liminf$ are equal, proving that the limit exists and that it has the following value, proving the theorem.
+$$
+\lim_{t\rightarrow 0^+}\frac{\phi(x+ty)-\phi(x)}{t}=\phi^\prime(x;y)=\max_{z\in Z_0(x)}\left<\nabla_xf(x,z),y\right>
+$$
 
 ### Finsler's Lemma:
 Given a symmetric matrix $H\in\mathbb{R}^{n\times n}$ and a matrix $A\in\mathbb{R}^{m\times n}$, we know the following statements are equivalent.
