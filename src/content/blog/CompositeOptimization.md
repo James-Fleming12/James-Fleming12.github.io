@@ -147,7 +147,45 @@ $$
 The proof ...
 
 ## Proximal Newton Method:
-work in progress...
+In the same way that we can apply the ideas behind gradient descent and nesterov acceleration to PPMs, we can also apply Newton's Method. The same general principle of using a quadratic approximation of $f$ is done in Proximal Newton, but the hessian of $f$ is used to improve the approximation.
+$$
+\begin{gather*}
+\hat{f}_k(x)=f(x_k)+\nabla f(x_k)^T(x-x_k)+\frac{1}{2}(x-x_k)^T\nabla^2f(x_k)(x-x_k)\\
+\min_x\left(\hat{f}_k(x)+g(x)\right)
+\end{gather*}
+$$
+We can then simplify this subproblem into the iteration rule for the method, where we can define $v=x_k=H^{-1}\nabla f(x_k)$ and $\nabla^2f(x_k)=H_k$ for notational simplicity.
+$$
+\begin{gather*}
+x_{k+1}=\text{prox}^{H_k}_g(x_k-H^{-1}_k\nabla f(x_k))\\
+x_{k+1}=\text{arg}\min_x\left(g(x)+\frac{1}{2}\|x-v\|^2_{H_k}\right)
+\end{gather*}
+$$
+To derive this update rule, we can first use the variable $\Delta x=x-x_k$ to make the subproblem simpler to work with.
+$$
+\min_{\Delta x}\left\{\nabla f(x_k)^T\Delta x+\frac{1}{2}\Delta x^TH_k\Delta x+g(x_k+\Delta x)\right\}
+$$
+The first two terms of the minimization are the first two terms of an expanded square missing the constant third term.
+$$
+\frac{1}{2}\|\Delta x+H^{-1}_k\nabla f(x_k)\|^2_{H_k}=\frac{1}{2}\Delta x^TH_k\Delta x+\nabla f(x_k)^T\Delta x+\text{constant}
+$$
+This means we can simplify the iteration to reveal the sacled proximal operator used in the algorithm.
+$$
+x_{k+1}=\text{arg}\min_x\left\{\frac{1}{2}\|x-(x_k-H^{-1}_k\nabla f(x_k))\|^2_{H_k}+g(x)\right\}
+$$
+
+### Backtracking Line Search:
+As will be covered later, proximal newton has the best convergence we have seen yet once within a certain range of the optimum, which is the range where we know that the the quadratic approximation made is highly accurate to the actual landscape of the function. The biggest issue with the algorithm is that it still suffers from the same instability that Newton's Method itself suffers from. When far from the optimum in strongly convex settings, the function itself does not need to have the same format as a quadratic, so although the quadratic approximation is highly accurate locally, it often makes incorrect assumptions about the surrounding landscape.
+
+The aggressiveness of the approximation makes the general direction of each iteration quite accurate, but the scale of each step is often inaccurate and is the main problem when it comes to the algorithm diverging. This is why the use of a backtracking line search stepsize $t_k$ is so common, and will be required by the theorems following.
+$$
+x_{k+1}=t_k\text{prox}^{H_k}_g(x_k-H^{-1}_k\nabla f(x_k))
+$$
+As a quick recap, a backtracking line searh is built on the idea of satisfying the Armijo Condition, an inequality that ensures that the actual decrease of the step taken is at least $\alpha\in(0,0.5)$ times the predicted decrease.
+$$
+F(x_k+td_k)\leq F(x_k)+\alpha t\Delta_k
+$$
+To ensure that each step satisfies this, we start with a full step $t_k=1$. If the Armijo condition holds, then we simply take the step. If not, we shrink the stepsize $t_k\leftarrow \beta t_k$ by some $\beta\in(0,1)$ and repeat until it does satisfy the inequality.
 
 ### Global Convergence:
 If $f$ is $m$-strongly convex and $L$-smooth, $g$ is convex, and $t_k$ is chosen using a backtracking line search, then we know that the method has a convergence rate of $O(\log(1/\epsilon))$. This can be detailed below with some consta $\gamma\in(0,1)$ which is proprtional to $\frac{m}{L}$ and penalized by the search parameters for the algorithm behind $t_k$.
