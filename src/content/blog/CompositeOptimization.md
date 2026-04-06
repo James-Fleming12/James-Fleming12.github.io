@@ -194,16 +194,155 @@ F(x_{k+1})-F(x^*)\leq(1-\gamma)(F(x_k)-F(x^*))
 $$
 To make the relationship between proximal newton and the previous methods clearer, we can see the convergence rates of proximal gradient and accelerated proximal gradient under the same conditions as this theorem in terms of the condition number $\kappa=\frac{L}{m}$ which conveys how stretched the function is, so functions with a higher $\kappa$ are harder to optimize. Since strong convexity is added to $f$, Proximal gradient's convergence rate becomes $O(\kappa\log(1/\epsilon))$ and the acceleration gets it to $O(\sqrt{\kappa}\log(1/\epsilon))$. Proximal Newton's convergence rate doesn't rely on the condition number since it uses the hessian of the function, removing any guess work that the other two make about the curvature of the function.
 
-The proof ...
+The proof follows by first proving that the direction of the iteration is a strict descent direction, and then using the line search to derive a recursive relationship between the function values of iterates.
+
+We can first define some properties of the direction $d_k=\hat{x}_{k+1}-x_k$ by using teh optimality conditions of the subproblem since $f$ and $g$ are convex. We define $v\in\partial(x_k+d_k)$ and $H_k=\nabla^2 f(x_k)$ for simplicity.
+$$
+\begin{gather*}
+0\in\nabla f(x_k)+H_k(\hat{x}_{k+1}-x_k)+\partial g(\hat{x}_{k+1})\\
+\nabla f(x_k)+H_kd_k+v=0
+\end{gather*}
+$$
+We can prove that $d_k$ is a descent direction by looking at the directional derivative of the problem towards $d_k$, where we need to use the change in $g$ rather than its derivative due to its non-differentiability.
+$$
+\Delta_k=\nabla f(x_k)^Td_k+g(x_k+d_k)-g(x_k)
+$$
+Since $g$ is convex, we know that $g(x_k)\geq g(x_k+d_k)-v^Td_k$, so along with the properties from optimality above we can simplify.
+$$
+\Delta_k\leq\nabla f(x_k)^Td_k+v^Td_k=(\nabla f(x_k)+v)^Td_k=-d^T_kH_kd_k
+$$
+Since $f$ is $m$-strongly convex, we know that $H_k\succeq mI$ with $m>0$. This means we can bound the right-hand side, proving that $d_k$ is a strict descent direction as $\Delta_k=0$ only if $\|d_k\|^2=0$.
+$$
+\Delta_k\leq -m\|d_k\|^2\leq 0
+$$
+Next, we can use the backtracking line search to show that the algorithm leads to a sufficient decrease in $F(x)$. Since we know that the Armijo Condition is satisfied, we know that the following applies.
+$$
+F(x_k+t_kd_k)\leq F(x_k)+\alpha t_k\Delta_k
+$$
+To make this descent meaningful, we need to lower bound $t_k$ to make sure that there is progress being made, which we do through manipulation of the function properties. Since $f$ is $L$-smooth, we can use the descent lemma to know the first bound, and since $g$ is convex and $t\in(0,1]$, we can derive the second bound.
+$$
+\begin{gather*}
+f(x_k+td_k)\leq f(x_k)+t\nabla f(x_k)^Td_k+\frac{L}{2}t^2\|d_k\|^2\\
+g(x_k+td_k)=g((1-t)x_k+t(x_k+d_k))\leq(1-t)g(x_k)+tg(x_k+d_k)\\
+g(x_k+td_k)\leq g(x_k)+t(g(x_k+d_k)-g(x_k))
+\end{gather*}
+$$
+Combining these two lets us derive a bound on the entire objective.
+$$
+F(x_k+td_k)\leq f(x_k)+t\nabla f(x_k)^Td_k+\frac{L}{2}t^2\|d_k\|^2+g(x_k)+t(g(x_k+d_k)-g(x_k))
+$$
+Grouping the first order terms and the previous defined $\Delta_k$, along with the fact that we know $\|d_k\|^2\leq-\frac{1}{m}\Delta_k$ from previous steps lets us simplify.
+$$
+\begin{gather*}
+F(x_k+td_k)\leq F(x_k)+t\Delta_k+\frac{L}{2}t^2\|d_k\|^2\\
+F(x_k+td_k)\leq F(x_k)+t\Delta_k+\frac{L}{2}t^2\left(-\frac{1}{m}\Delta_k\right)\\
+F(x_k+td_k)\leq F(x_k)+t\Delta_k\left(1-\frac{Lt}{2m}\right)
+\end{gather*}
+$$
+This gives us an upper bound parabola with terms we can work with. To show that the Armijo Condition can be satisfied, we can require that the right-hand side of the Armijo equation is below the parabola we defined here.
+$$
+\begin{gather*}
+F(x_k)+t\Delta_k\left(1-\frac{Lt}{2m}\right)\leq F(x_k)+\alpha t\Delta_k\\
+t\Delta_k\left(1-\frac{Lt}{2m}\right)\leq\alpha t\Delta_k\\
+1-\frac{Lt}{2m}\geq\alpha\\
+t\leq \frac{2m(1-\alpha)}{L}
+\end{gather*}
+$$
+Since $\alpha\in(0,0.5)$, we know that $t\leq \frac{m}{L}$ will satisfy the Armijo Condition. This leads to either $t_k=1$ being accepted, or a lower bound of $\beta\frac{m}{L}$ if we do need to scale by $\beta$, so $t_k\geq\min\left(1,\beta\frac{m}{L}\right)$. Since we know that $m\leq L$ by definition of the properties and $0<\beta<1$, this simplifies to the following.
+$$
+t_k\geq\beta\frac{m}{L}
+$$
+Now that we've done the proper setup, we can start working on making the final bound on suboptimality. To start we use the fact that $f(x)$ is strongly convex and that $g(x)$ is convex, where again $v\in\partial g(x_k+d_k)$.
+$$
+\begin{gather*}
+f(x^*)\geq f(x_k)+\nabla f(x_k)^T(x^*-x_k)+\frac{m}{2}\|x^*-x_k\|^2\\
+g(x^*)\geq g(x_k+d_k)+v^T(x^*-(x_k+d_k))
+\end{gather*}
+$$
+We can then combine these bounds to derive a bound on the global minimum $F(x^*)$. We can add $\nabla f(x_k)^Td_k+g(x_k)$ to both sides to simplify, in turn introducing our previous $\Delta_k$.
+$$
+\begin{gather*}
+F(x^*)\geq f(x_k)+\nabla f(x_k)^T(x^*-x_k)+\frac{m}{2}\|x^*-x_k\|^2+g(x_k+d_k)+v^T(x^*-x_k-d_k)\\
+F(x^*)\geq F(x_k)+\Delta_k+(\nabla f(x_k)+v)^T(x^*-x_k-d_k)+\frac{m}{2}\|x^*-x_k\|^2
+\end{gather*}
+$$
+We can then substitute in $\nabla f(x)+v=-H_kd_k$ from our optimality condition analysis and simplify further.
+$$
+F(x^*)\geq F(x_k)+\Delta_k-d^T_kH_k(x^*-x_k)+d^T_kH_kd_k+\frac{m}{2}\|x^*-x_k\|^2
+$$
+Using the the Peter-Paul inequality, which states that for any two vectors $a$ and $b$ and any constant $\gamma>0$, we know $a^Tb\leq\frac{1}{2\gamma}\|a\|^2+\frac{\gamma}{2}\|b\|^2$, we can simplify again. Specifically we use the inequality with $a=H_kd_k$ and $b=x^*-x_k$ to remove the $\|x^*-x_k\|^2$ term.
+$$
+F(x^*)\geq F(x_k)+\Delta_k-\frac{1}{2m}\|H_kd_k\|^2+d^T_kH_kd_k
+$$
+Since $f$ is $L$-smooth, we know that $H_k\preceq LI$, so $\|H_kd_k\|^2\leq L(d^T_kH_kd_k)$, which we can use along with $d^T_kH_kd_k\leq-\Delta_k$ to get the following.
+$$
+\begin{gather*}
+F(x_k)-F(x^*)\leq -\Delta_k+\frac{L}{2m}(d^T_kH_kd_k)-d^T_kH_kd_k\\
+F(x_k)-F(x^*)\leq-\frac{L}{2m}\Delta_k
+\end{gather*}
+$$
+Finally, we can rearrange to isolate $\Delta_k$ to derive a bound on it, which we can substitute into the Armijo Condition the derive our final inequality. We can define $\gamma=\alpha\beta\frac{2m^2}{L^2}$, which satisfies $0<\gamma<1$, proving the theorem.
+$$
+F(x_{k+1})\leq F(x_k)-\alpha\left(\beta\frac{m}{L}\right)\left[\frac{2m}{L}(F(x_k)-F(x^*))\right]
+$$
 
 ### Local Convergence:
-The real strength of the method can be seen once the iterate gets close enough to the optimal $x^*$. If $f$ is $m$-strongly convex, $L$-smooth, and has an $M$-Lipschitz hessian, $g$ is convex, and $\|x_k-x^*\|<\epsilon$ where $\epsilon\approx\frac{m}{M}$, then we know the method has a convergence rate $O(\log\log(1/\epsilon))$ which is detailed below.
+The real strength of the method can be seen once the iterate gets close enough to the optimal $x^*$, when the quadratic approximation becomes highly accurate. If $f$ is $m$-strongly convex, $L$-smooth, and has an $M$-Lipschitz hessian, $g$ is convex, and $\|x_k-x^*\|<\epsilon$ where $\epsilon\approx\frac{m}{M}$, then we know the method has a convergence rate $O(\log\log(1/\epsilon))$ which is detailed below.
 $$
 \|x_{k+1}-x^*\|\leq\frac{M}{2m}\|x_k-x^*\|^2
 $$
-The local and global convergence rates are also called undamped and damped convergence, since once the iterate gets close enough to $x^*$, then we know that the backtracking line search will always return $t_k=1$, leading to the steps not being scaled and thus not being damped.
+Once the iterate gets close enough to $x^*$, we also know that the backtracking line search will always return $t_k=1$, leading to the steps not being damped.
 
-The proof ...
+The proof follows by first proving that the error between the actual function and the approximation is bounded, and using it to prove the recursive relationship we want.
+
+We start by finding two subgradients $v^*\in\partial g(x^*)$ and $v_{k+1}\in\partial g(x_{k+1})$ from the optimality conditions of the problem as a whole and of the subproblem for each iteration.
+$$
+\begin{gather*}
+-v^*=\nabla f(x^*)\\
+-v_{k+1}=\nabla f(x_k)+\nabla^2f(x_k)(x_{k+1}-x_k)
+\end{gather*}
+$$
+We can use these two to define an inequality using the monotone gradient property of the convex $g$, which we can combine with the strong convexity of $f$ to define an inequality with all of the terms we need.
+$$
+\begin{gather*}
+(v_{k+1}-v^*)^T(x_{k+1}-x^*)\geq 0\\
+(\nabla f(x_{k+1})-\nabla f(x^*))^T(x_{k+1}-x^*)\geq m\|x_{k+1}-x^*\|^2\\
+(\nabla f(x_{k+1})-v_{k+1}-(\nabla f(x^*)-v^*))^T\geq m\|x_{k+1}-x^*\|^2
+\end{gather*}
+$$
+This can be simplified using $\nabla f(x^*)-v^*=0$, and then by applying Cauchy-Schwarz and dividing by $m\|x_{k+1}-x^*\|^2$.
+$$
+\begin{gather*}
+(\nabla f(x_{k+1})+v_{k+1})^T(x_{k+1}-x^*)\geq m\|x_{k+1}-x^*\|^2\\
+\|x_{k+1}-x^*\|^2\leq\frac{1}{m}\|\nabla f(x_{k+1})+v_{k+1}\|
+\end{gather*}
+$$
+The term $\nabla f(x_{k+1})+v_{k+1}$ represents the error between the expected gradient at the next iterate and the real gradient, which we can use the $M$-Lipschitz contuity of the hessian to bound. This is where the importance of the use of the hessian becomes important, as it makes this error much smaller than in typical gradient descent methods.
+$$
+\nabla f(x_{k+1})+v_{k+1}=\nabla f(x_{k+1})-[\nabla f(x_k)+\nabla^2f(x_k)(x_{k+1}-x_k)]
+$$
+To denote the difference $\nabla f(x_{k+1})-\nabla f(x_k)$ in terms that can be combined with the hessian term, we can use the Fundamental Theorem of Calculus to denote the term using a path integral over $p(\tau)=x_k+\tau(x_{k+1}-x_k)$, since we know that $\frac{dp}{\tau}=x_{k=1}-x_k$.
+$$
+\begin{gather*}
+\nabla f(x_{k+1})-\nabla f(x_k)=\int^1_0\frac{d}{d\tau}\nabla f(p(\tau))d\tau\\
+\nabla f(x_{k+1})-\nabla f(x_k)=\int^1_0\nabla^2f(x_k+\tau(x_{k+1}-x_k))(x_{k+1}-x_k)d\tau
+\end{gather*}
+$$
+Substituting this into the original statement allows us to simplify.
+$$
+\nabla f(x_{k+1})+v_{k+1}=\int^1_0[\nabla^2f(x_k+\tau(x_{k+1}-x_k))-\nabla^2f(x_k)](x_{k+1}-x_k)d\tau
+$$
+Since the hessian is $M$-Lipschitz, we can take the norm of both sides and bound the terms inside the bracket. This leads to an integral with a constant integrand, so we can simplify using the fact that $C\int^1_0\tau d\tau=\frac{C}{2}$.
+$$
+\begin{gather*}
+\|\nabla f(x_{k+1})-v_{k+1}\|\leq\int^1_0M\tau\|x_{k+1}-x_k\|^2d\tau\\
+\|\nabla f(x_{k+1})-v_{k+1}\|\leq\frac{M}{2}\|x_{k+1}-x_k\|^2
+\end{gather*}
+$$
+To finish the proof, we substitute this into our original bound to derive the desired result.
+$$
+\|x_{k+1}-x_k\|\leq\frac{M}{2m}\|x_{k+1}-x_k\|^2
+$$
 
 ## Proximal Quasi-Newton (Proximal L-BFGS):
 work in progress...
