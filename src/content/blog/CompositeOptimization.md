@@ -54,14 +54,87 @@ $$
 These both go to show that PPM has a much more solid foundation for convergence than a simple subgradient descent would, which is why it is so commonly used.
 
 ## Proximal Gradient Method:
-work in progress...
+Since we assume that $f(x)$ is a hard function to optimize over, to simplify the proximal calculations we can consider using a quadratic approximation of $f(x)$ constructed at each iterate $x_k$, where $L$ defines the curvature of the approximation.
+$$
+Q_L(x,x_k)=f(x_k)+\left<x-x_k,\nabla f(x_k)\right>+\frac{L}{2}\|x-x_k\|^2+g(x)
+$$
+Through minimizing this surrogate we can arrive at the following iteration scheme.
+$$
+x_{k+1}=\text{arg}\min_x\left\{\frac{L}{2}\left\|x-\left(x_k-\frac{1}{L}\nabla f(x_k)\right)\right\|^2+g(x)\right\}
+$$
+Since this same quadratic approximation is what gradient descent does under the hood, this simplifies down to using the proximal operator on a standard gradient descent step of $f$. This leads to an algorithm that can optimize over $f$ much quicker than the previous subgradient descent while still being feasible at each iteration.
+$$
+\begin{gather*}
+z_k=x_k-\frac{1}{L}\nabla f(x_k)\\
+x_{k+1}=\text{prox}_{\frac{1}{L}g}(z_k)
+\end{gather*}
+$$
+Since $g$ is assumed to have a simple structure, there is more often than not a simple closed form solution to the proximal operator step. Consider the case of a simple case of $g(x)$ being an indicator function for some convex set $C$.
+$$
+g(x)=\mathbb{1}_{C}(x)=\begin{cases}0&\text{if }x\in C\\\infty&\text{if }x\notin C\end{cases}
+$$
+This definition of $g$ makes the proximal operator become a projection onto $C$, causing the algorithm to turn into projected gradient descent.
+$$
+\text{prox}_{\frac{1}{L}\mathbb{1}_C(x)}(z)=\Pi_C(z)=\text{arg}\min_{x\in C}\|x-z\|^2
+$$
+We can also return back to our original example of $g(x)=\|x\|_1$, which once simplified has a proximal operator with a very simple closed form.
+$$
+\begin{gather*}
+g(x)=\|x\|_1=\sum|x_i|\\
+\text{prox}_{\frac{1}{L}\|\cdot\|_1}(z)_i=\text{sgn}(z_i)\max\left(|z_i|-\frac{1}{L},0\right)
+\end{gather*}
+$$
+This specific form of the algorithm is called the Iterative Soft-Thresholding Algorithm, shortened to ISTA, and is going to be of slight importance later for naming conventions.
 
 ### Convergence:
 If $f$ is an L-Smooth convex function, $g$ is a lower-semicontinuous convex function, and a stepsize $\frac{1}{L}$ is used, then we know that the method has a convergence rate of $O(1/\epsilon)$ to reach an error $\epsilon$, which is detailed below.
 $$
 F(x_k)-F(x^*)\leq\frac{L\|x_0-x^*\|^2}{2k}
 $$
-In order to prove this rate, we first need to prove that the iterates satisfy $F(x_{k+1})\leq F(x_k)$, which is a property that is guaranteed when $f$ is $L$-Smooth and a stepsize $\frac{1}{L}$ is used. The proof follows by definition of the surrogate, which ...
+In order to prove this rate, we first need to prove that the iterates satisfy $F(x_{k+1})\leq F(x_k)$, which is a property that is guaranteed when $f$ is $L$-Smooth and a stepsize $\frac{1}{L}$ is used. The proof is a simple one that relies on the properties of the surrogate $Q_L(x,x_k)$. By definition we already know that $Q_L(x_k,x)=F(x_k)$ and since $x_{k+1}$ is derived through a minimization we have $Q_L(x_{k+1},x_k)\leq Q_L(x_k,x_k)$. Since $f$ is $L$-smooth, we know that the descent lemma holds, which if $g(x_{k+1})$ is added to both sides proves $F(x_{k+1})\leq Q_L(x_{k+1},x_k)$. Putting these together we can arrive at the desired result.
+$$
+F(x_{k+1})\leq Q_L(x_{k+1},x_k)\leq Q(x_k,x_k)=F(x_k)
+$$
+Now we can return to the original convergence theorem. Since $f$ is $L$-smooth, we can apply the descent lemma to the function to provide a bound. Adding $g(x_{k+1})$ to both sides gives us an inequality in terms of $F$ and our surrogate $Q_L$.
+$$
+\begin{gather*}
+f(x_{k+1})\leq f(x_k)+\left<\nabla f(x_k),x_{k+1}-x_k\right>+\frac{L}{2}\|x_{k+1}-x_k\|^2\\
+F(x_{k+1})\leq Q_L(x_{k+1},x_k)
+\end{gather*}
+$$
+Since $x_{k+1}$ is the result of a minimization subproblem, which we know is a convex problem since $g$ and the quadratic approximation are both convex, we can use the standard derivative optimality conditions to derive some properties of $x_{k+1}$. We can specifically derive the following, which allows us to know that there is some subderivative of $g$ at $x_{k+1}$ that is equal to $-\nabla f(x_k)-L(x_{k+1},x_k)$.
+$$
+0\in\nabla f(x_k)+L(x_{k+1},x_k)+\partial g(x_{k+1})
+$$
+We can then use the convexity of $f$ and $g$ to derive the following bounds for some arbitrary $x$ using the tangent line property, where we replace the subgradient in the inequality with our above defined subgradient.
+$$
+\begin{gather*}
+g(x)\geq g(x_{k+1})+\left<-\nabla f(x_k)-L(x_{k+1},x_k),x-x_{k+1}\right>\\
+f(x)\geq f(x_k)+\left<\nabla f(x_k),x-x_k\right>
+\end{gather*}
+$$
+Using these two we can redefine the bound $F(x_{k+1})\leq Q_L(x_{k+1},x_k)$ into one over an arbitrary $x$ and simplify by expanding the inner products.
+$$
+\begin{gather*}
+F(x_{k+1})\leq F(x)+\left<L(x_k-x_{k-1}),x_{k-1}-x\right>+\frac{L}{2}\|x_{k+1}-x_k\|^2\\
+F(x_{k+1})\leq F(x)+\frac{L}{2}(\|x_k-x\|^2-\|x_{k+1}-x\|^2)
+\end{gather*}
+$$
+We can then define $x=x^*$ which defines a recursive relationship between $x_k$ and $x_{k+1}$, which means we can also bound the total sum of both over the $k$ iterations.
+$$
+\begin{gather*}
+F(x_{k+1})-F(x^*)\leq\frac{L}{2}(\|x_k-x^*\|^2-\|x_{k+1}-x^*\|^2)\\
+\sum^{k-1}_{i=0}(F(x_{i+1})-F(x^*))\leq\frac{L}{2}\sum^{k-1}_{i=0}(\|x_i-x^*\|^2-\|x_{i+1}-x^*\|^2)
+\end{gather*}
+$$
+Since the right-hand side forms a telescoping sum, we can collapse it down to the initial and final terms and simplify.
+$$
+\sum^{k-1}_{i=0}(F(x_{i+1})-F(x^*))\leq\frac{L}{2}(\|x_0-x^*\|^2-\|x_k-x^*\|^2)=\frac{L}{2}(\|x_0-x^*\|^2)
+$$
+Now we can finally use the fact that $F(x_k)$ is non-increasing under this setting so that we can know that $F(x_k)-F(x^*)$ will be the smallest term in the sum. This means that $k(F(x_k)-F(x^*))$ will be less than the entire sum, so we can derive the bound below, which completes the proof.
+$$
+k(F(x_k)-F(x^*))\leq\sum^{k-1}_{i=0}(F(x_{i+1})-F(x^*))\leq\frac{L}{2}(\|x_0-x^*\|^2)\\
+$$
 
 ## Accelerated Proximal Gradient (FISTA):
 work in progress...
