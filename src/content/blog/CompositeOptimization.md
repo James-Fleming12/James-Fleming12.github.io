@@ -344,8 +344,66 @@ $$
 \|x_{k+1}-x_k\|\leq\frac{M}{2m}\|x_{k+1}-x_k\|^2
 $$
 
-## Proximal Quasi-Newton (Proximal L-BFGS):
+## Regularized Proximal Quasi-Newton:
 work in progress...
 
-## Regularized Proximal Quasi-Newton:
+### Convergence Preliminaries:
+A bunch of preliminaries are mentioned in the paper before going into the convergence proofs, but the main two that were novel to me personally were about the scaled proximal operator. As a refresher, we define a scaled proximal operator with some matrix $H$ and a function $\varphi$ as follows, where in the following theorems we assume that $H\in\mathbb{S}^n_{++}$ (symmetric positive definite) and that $\varphi$ is convex.
+$$
+\text{prox}^H_{\varphi}(v)=\text{arg}\min_x\{\varphi(x)+\frac{1}{2}(y-x)^TH(y-x)\}
+$$
+First, we can prove that $p=\text{prox}^H_\varphi(x)$ if and only if $p\in x-H^{-1}\partial\varphi(p)$. We start by defining the objective function $J(z)$ of the operator.
+$$
+J(z)=\varphi(z)+\frac{1}{2}(z-x)^TH(z-x)
+$$
+Since $\varphi$ is convex and $H$ is positive definite, we know $J(z)$ is strictly convex, thus we know that a point $p$ is the global minimizer of $J(z)$ if and only if $0\in\partial J(p)$. We can then use the sum rule for subdifferentials to simplify this statement into what we need.
+$$
+\begin{gather*}
+\partial J(p)=\partial\varphi(p)+H(p-x)\\
+0\in\partial\varphi(p)+H(p-x)\\
+H(x-p)\in\partial\varphi(p)
+\end{gather*}
+$$
+Since $H$ is positive definite, it is invertible, which allows us to derive what we originally stated, concluding the proof.
+$$
+\begin{gather*}
+x-p\in H^{-1}\partial\varphi(p)\\
+p\in x-H^{-1}\partial\varphi(p)
+\end{gather*}
+$$
+
+Second, we can prove that the proximal operator is firmly nonexpansive with respect to the norm induced by $H$, ie for every $x,y\in\mathbb{R}^n$ we have the following.
+$$
+\|\text{prox}^H_\varphi(x)-\text{prox}^H_\varphi(y)\|^2_H\leq\left<\text{prox}^H_\varphi(x)-\text{prox}^H_\varphi(y),x-y\right>_H
+$$
+For simplicity, we can define $p=\text{prox}^H_{\varphi}(x)$ and $q=\text{prox}^H_\varphi(y)$. From the optimality conditions we showed previously we know the following.
+$$
+\begin{gather*}
+H(x-p)\in\partial\varphi(p)\\
+H(y-p)\in\partial\varphi(q)
+\end{gather*}
+$$
+Since $\varphi$ is a convex function, we know its subdifferential operator is monotone, thus for any $p,q$ and their corresponding subgradients $u,v$ we have $\left<u-v,p-q\right>\geq 0$, thus we know the following for our points.
+$$
+\begin{gather*}
+\left<H(x-p)-H(y-q),p-q\right>\geq 0\\
+\left<H((x-p)-(y-q)),p-q\right>=\left<(x-y)-(p-q),p-q\right>_H\geq0
+\end{gather*}
+$$
+We can distribute the inner product and simplify, which allows us to derive what we originally stated, concluding the proof.
+$$
+\begin{gather*}
+\left<x-y,p-q\right>_H-\left<p-q,p-q\right>_H\geq 0\\
+\left<x-y,p-q\right>_H\geq\|p-q\|^2_H\\
+\left<\text{prox}^H_\varphi(x)-\text{prox}^H_\varphi(y),x-y\right>_H\geq \|\text{prox}^H_\varpi(x)-\text{prox}^H_\varphi(y)\|^2_H
+\end{gather*}
+$$
+
+### Global Weak Convergence:
+work in progress...
+
+### Global Strong Convergenc:
+work in progress...
+
+### Covergence Under an Error Bound Condition:
 work in progress...
