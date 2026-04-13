@@ -384,7 +384,9 @@ x^{k+1}=\begin{cases}x^k&\text{if }\rho_k\leq c_1\\x^k+d^k&\text{otherwise}\end{
 $$
 
 ### Convergence Preliminaries:
-A bunch of preliminaries are mentioned in the paper before going into the convergence proofs, but the main two that were novel to me personally were about the scaled proximal operator. As a refresher, we define a scaled proximal operator with some matrix $H$ and a function $\varphi$ as follows, where in the following theorems we assume that $H\in\mathbb{S}^n_{++}$ (symmetric positive definite) and that $\varphi$ is convex.
+A bunch of preliminaries are mentioned in the paper before going into the convergence proofs, so I'll include the four that were novel to me personally here since they are also important for later steps of the proof.
+
+As a refresher for the firs two, we define a scaled proximal operator with some matrix $H$ and a function $\varphi$ as follows, where in the following theorems we assume that $H\in\mathbb{S}^n_{++}$ (symmetric positive definite) and that $\varphi$ is convex.
 $$
 \text{prox}^H_{\varphi}(v)=\text{arg}\min_x\{\varphi(x)+\frac{1}{2}(y-x)^TH(y-x)\}
 $$
@@ -433,6 +435,56 @@ $$
 \left<x-y,p-q\right>_H\geq\|p-q\|^2_H\\
 \left<\text{prox}^H_\varphi(x)-\text{prox}^H_\varphi(y),x-y\right>_H\geq \|\text{prox}^H_\varpi(x)-\text{prox}^H_\varphi(y)\|^2_H
 \end{gather*}
+$$
+
+For the third, we have to prove that if $d^k=0$ then $x^k$ is a stationary point of $\psi$, with the converse of the statement being true if $B_k+\mu_kI$ is positive definite. Keep in mind that the algorithm itself does not require $B_k+\mu_kI$ to be positive definite anywhere, so the more reliable $r(x^k)$ stopping criterion is used instead, we just need this for some assumptions made later.
+
+To prove that $d^k=0$ leads to $x^k$ being a stationary point, then we only need to use the definition of $d^k$ and Fermat's Rule, which trivially simplifies into the statement for the stationarity of $x^k$.
+$$
+\begin{gather*}
+0\in\nabla f(x^k)+(B_k+\mu_kI)d^k+\partial\varphi(x^k+d^k)\\
+0\in\nabla f(x^k)+\partial\varphi(x^k)
+\end{gather*}
+$$
+To prove that $x^k$ being a stationary point leads to $d^k=0$ if $B_k+\mu_kI$ is positive definite, we first get the fact that $-\nabla f(x^k)\in\partial\psi(x^k)$ from stationarity. We can then use this subgradient in the definition of $\varphi$ being convex to know $\varphi(x^k+d)\geq\varphi(x^k)-\nabla f(x^k)^Td$. Using this we can analyze the objective for our iteration subproblem.
+$$
+\hat{q}_k(0)=f(x^k)+\varphi(x^k)\leq f(x^k)+\nabla f(x^k)^Td+\varphi(x^k+d)
+$$
+We can add the term $\frac{1}{2}d^T(B_k+\mu_kI)d$ to the right-hand side, since by $B_k+\mu_kI\succ 0$ we know that the term will be positive. This leads to the statement that $d^k=0$ is the global minimizer, which is guaranteed to be the only solution by $B_k+\mu_kI$'s positive definiteness causing the subproblem to become strictly convex, thus proving the statement.
+$$
+\hat{q}_k(0)\leq f(x^k)+\nabla f(x^k)^Td+\frac{1}{2}d^T(B_k+\mu_kI)d+\varphi(x^k+d)=\hat{q}_k(d)
+$$
+For the fourth, we need to derive an upper bound for the general residual $r_H(x)$, where the one we discussed previously was defined $r(x)=r_I(x)$.
+$$
+\begin{gather*}
+r_H(x)=\text{arg}\min_d\left\{\nabla f(x)^Td+\frac{1}{2}d^THd+\varphi(x+d)\right\}\\
+r_H(x)=\text{prox}^H_\varphi(x-H^{-1}\nabla f(x))-x
+\end{gather*}
+$$
+For some $x$, a matrix $H$, and symmetric positive definite matrix $\tilde{H}$, we know the following.
+$$
+\|r_{\tilde{H}}(x)\leq\left(1+\frac{\lambda_\text{max}(\tilde{H})}{\lambda_\text{min}(H)}\right)\cdot\frac{\lambda_\text{max}(H)}{\lambda_\text{min}(\tilde{H})}\cdot\|r_H(x)\|
+$$
+The proof borrows a result from a work that will be mentioned later again, Block Coordinate Descent. From a lemma in the paper we know the following, where $Q=H^{-1/2}\tilde{H}H^{-1/2}$. The proof for the lemma follows from the optimality conditions of the residuals, Fermat's Rule, and some careful algebraic manipulation.
+$$
+\|r_{\tilde{H}}\|(x)\leq\frac{1+\lambda_\text{max}(Q)+\sqrt{1-2\lambda_\text{min}(Q)+\lambda_\text{max}(Q)^2}}{2}\frac{\lambda_\text{max}(H)}{\lambda_\text{max}(\tilde{H})}\cdot\|r_H(x)\|
+$$
+We can then derive two bounds for the terms within the bound derived above.
+$$
+\begin{gather*}
+1-2\lambda_{\min}(Q)+\lambda_{\max}(Q)^2\leq 1+\lambda_{\max}(Q)^2\leq (1+\lambda_{\max}(Q))^2\\
+\lambda_{\max}(Q)\leq \lambda_{\max}(\tilde{H})/\lambda_{\min}(H)
+\end{gather*}
+$$
+These can then be plugged into the bound, which after being simplified gives us the desired result.
+$$
+\lambda_{\max} (Q)  = \max_{x \neq 0} \frac{x^T H^{-1/2} \tilde{H} H^{-1/2} x}{x^T x} 
+= \max_{z \neq 0} \frac{z^T \tilde{H} z}{z^T H z}\\
+\lambda_{\max} (Q)= \max_{z \neq 0} \bigg( \frac{z^T \tilde{H} z}{z^T z} \frac{z^T z}{z^T H z} \bigg) 
+\leq \bigg( \max_{z \neq 0} \frac{z^T \tilde{H} z}{z^T z} \bigg)\\
+\lambda_{\max}(Q)\leq \bigg( \max_{z \neq 0} \frac{1}{\frac{z^T H z}{z^T z}} \bigg) 
+= \lambda_{\max} (\tilde{H}) \frac{1}{\min_{z \neq 0} \frac{z^T H z}{z^T z}} 
+= \lambda_{\max} (\tilde{H}) \cdot \frac{1}{\lambda_{\min} (H)}
 $$
 
 ### Global Weak Convergence:
