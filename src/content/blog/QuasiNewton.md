@@ -14,7 +14,7 @@ f(z)=f(x^{(t)})+\nabla f(x^{(t)})(z-x^{(t)})+\frac{1}{2}(z-x^{(t)})\nabla^2f(\xi
 f(z)\approx f(x^{(t)})+\nabla f(x^{(t)})(z-x^{(t)})+\frac{1}{2\mu}\|z-x^{(t)}\|^2
 \end{gather*}
 $$
-We can see that this leads to the right-hand side of the approximation being a convex function, which if we define $g(z)$ and use the fact that the minimum will be at $\nabla g(z^*)=0$, then we can derive the standard gradient descent algorithm.
+We can see that this leads to the right-hand side of the approximation being a convex function, which if we define as $g(z)$ and use the fact that the minimum will be at $\nabla g(z^*)=0$, then we can derive the standard gradient descent algorithm.
 $$
 \begin{gather*}
 \nabla g(z)=\nabla f(x^{(t)})+\frac{1}{\mu}(z-x^{(t)})=0\\
