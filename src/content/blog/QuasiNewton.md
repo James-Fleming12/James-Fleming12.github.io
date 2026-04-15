@@ -7,7 +7,7 @@ pubDate: 4/01/2026
 This is a quick review that I needed to do before some composite optimization review. It's going to cover the basic definitions of Newton's Method, Quasi-Newton Methods, and give derivations for Broyden's Method, SR1, PSB, DFP, and BFGS. Might cover the convergence of each in a later article, but this was long enough as is.
 
 ## Newton's Method:
-One interpretation of Gradient Descent that is going to important for the content here is the interpretation that the method approximates $\nabla^2 f(\epsilon)$ of the second-order taylor expansion (where $\xi$ is a point between $x$ and $x^{(t)}$ which makes the approximation exact) below using $\frac{1}{\mu}I$ (where $\mu$ is the stepsize).
+One interpretation of Gradient Descent that is going to important for the content here is the interpretation that the method approximates $\nabla^2 f(\xi)$ of the second-order taylor expansion (where $\xi$ is a point between $x$ and $x^{(t)}$ which makes the approximation exact) below using $\frac{1}{\mu}I$ (where $\mu$ is the stepsize).
 $$
 \begin{gather*}
 f(z)=f(x^{(t)})+\nabla f(x^{(t)})(z-x^{(t)})+\frac{1}{2}(z-x^{(t)})\nabla^2f(\xi)(z-x^{(t)})\\

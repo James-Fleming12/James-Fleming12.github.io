@@ -137,7 +137,7 @@ k(F(x_k)-F(x^*))\leq\sum^{k-1}_{i=0}(F(x_{i+1})-F(x^*))\leq\frac{L}{2}(\|x_0-x^*
 $$
 
 ## Accelerated Proximal Gradient (FISTA):
-work in progress...
+One of the methods of speeding up the convergence of gradient descent with momentum is Nesterov's Acceleration, where we evaluate the gradient at the point that the momentum term is going towards, rather than at the current iterate. The same principle can be used to derive Accelerated Proximal Gradient, which is what the paper on ...
 
 ### Convergence:
 If $f$ is an L-Smooth convex function and $g$ is a proper, lower-semicontinuous convex function, then we know that the method has a convergence rate of $O(1/\sqrt{\epsilon})$ to reach an error $\epsilon$. This can be detailed below where $\alpha=1$ if a constant stepsize is used, and $\alpha=\eta$ if a backtracking line search step size is used, where $\eta$ is the acceptance threshold.
@@ -502,4 +502,4 @@ The paper rounds out the convergence analysis of the algorithm by using a simila
 
 If $f$ has a lipschitz continuous gradient and $MI\succeq H_k\succeq mI$ for some $M\geq m>0$ (along with the above being true), then the sequence $\{x^k\}$ converges to some $\bar{x}$.
 
-The proof follows a very similar structure to that in Block Coordinate Descent's paper. We start by ...
+The proof follows a very similar structure to that in Block Coordinate Descent's paper after some initla prep work. We start by ...
