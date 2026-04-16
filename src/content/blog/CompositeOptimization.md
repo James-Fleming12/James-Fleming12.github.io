@@ -133,18 +133,132 @@ $$
 $$
 Now we can finally use the fact that $F(x_k)$ is non-increasing under this setting so that we can know that $F(x_k)-F(x^*)$ will be the smallest term in the sum. This means that $k(F(x_k)-F(x^*))$ will be less than the entire sum, so we can derive the bound below, which completes the proof.
 $$
-k(F(x_k)-F(x^*))\leq\sum^{k-1}_{i=0}(F(x_{i+1})-F(x^*))\leq\frac{L}{2}(\|x_0-x^*\|^2)\\
+k(F(x_k)-F(x^*))\leq\sum^{k-1}_{i=0}(F(x_{i+1})-F(x^*))\leq\frac{L}{2}(\|x_0-x^*\|^2)
 $$
 
-## Accelerated Proximal Gradient (FISTA):
-One of the methods of speeding up the convergence of gradient descent with momentum is Nesterov's Acceleration, where we evaluate the gradient at the point that the momentum term is going towards, rather than at the current iterate. The same principle can be used to derive Accelerated Proximal Gradient, which is what the paper on ...
+## Accelerated Proximal Gradient:
+One of the methods of speeding up the convergence of gradient descent with momentum is Nesterov's Acceleration, where we evaluate the gradient at the point that the momentum term is going towards, rather than at the current iterate. The same principle can be used to derive Accelerated Proximal Gradient, which is what the paper on the [Fast Iterative Shrinkage-Thresholind (FISTA)](https://www.cs.cmu.edu/~airg/readings/2012_02_21_a_fast_iterative_shrinkage-thresholding.pdf) algorithm does. First we can redefine the original proximal gradient method by defining $p_L(y)=\text{argmin}\{Q_L(x,y):x\in\mathbb{R}^n\}$ which uses a stepsize $L$.
+$$
+\begin{gather*}
+p_L(y)=\text{argmin}_x\left\{g(x)+\frac{L}{2}\left\|x-\left(y-\frac{1}{L}\nabla f(y)\right)\right\|^2\right\}\\
+x_k=p_L(x_{k-1})
+\end{gather*}
+$$
+The accelerated proximal gradient method introduces a momentum term $y_k$ which is given its own stepsize $t_k$. For later convergence analysis we define $t^2_k-t_k=t^2_{k-1}$ so that $t^2_{k+1}-t_{k+1}\leq t^2_k$ holds. Using this along with our previously defined $p_L(\cdot)$ gives the update rule for FISTA.
+$$
+\begin{gather*}
+x_k=p_L(y_k)\\
+t_{k+1}=\frac{1+\sqrt{1+4t^2_k}}{2}\\
+y_{k+1}=x_k+\left(\frac{t_k-1}{t_{k+1}}\right)(x_k-x_{k-1})
+\end{gather*}
+$$
+While this may feel unintuitive, the same intuition can be used for this as nesterov acceleration itself. Rather than solely relying on the current information, the use of $y_k$ allows the method to look ahead before taking a step, allowing it to correct its trajectory faster. These properties are also shown in the improved convergence guarantees.
 
 ### Convergence:
-If $f$ is an L-Smooth convex function and $g$ is a proper, lower-semicontinuous convex function, then we know that the method has a convergence rate of $O(1/\sqrt{\epsilon})$ to reach an error $\epsilon$. This can be detailed below where $\alpha=1$ if a constant stepsize is used, and $\alpha=\eta$ if a backtracking line search step size is used, where $\eta$ is the acceptance threshold.
+If $f$ is an $L$-Smooth convex function and $g$ is a proper, lower-semicontinuous convex function, then we know that the method has a convergence rate of $O(1/\sqrt{\epsilon})$ to reach an error $\epsilon$.
 $$
-F(x_k)-F(x^*)\leq\frac{2\alpha L\|x_0-x^*\|^2}{(k+1)^2}
+F(x_k)-F(x^*)\leq\frac{2L\|x_0-x^*\|^2}{(k+1)^2}
 $$
-The proof ...
+In order to start the proof, we need to reintroduce three lemmas from the original proximal gradient definition. The first is the standard descent lemma coming from $f$ being $L$-smooth.
+$$
+f(x)\leq f(y)+\left<x-y,\nabla f(y)\right>+\frac{L}{2}\|x-y\|^2
+$$
+The second comes from the optimality conditions of $p_L(y)$ and the fact that its a convex problem. We know that one has $z=p_L(y)$ if and only if there exists $\gamma(y)\in\partial g(z)$ such that the following holds.
+$$
+\nabla f(y)+L(z-y)+\gamma(y)=0
+$$
+The third comes from careful analysis of the convexity of both $f$ and $g$. For any $x$ if we have a point $y$ that satisfies $F(p_L(y))\leq Q(p_L(y),y)$ then we have the following.
+$$
+F(x)-F(p_L(y))\geq\frac{L}{2}\|p_L(y)-y\|^2+L\left<y-x,p_L(y)-y\right>
+$$
+To prove the third lemma, we can first look at the inequalities from the definition of convexity for both functions and then combine them to get a bound on $F(x)$.
+$$
+\begin{gather*}
+f(x)\geq f(y)+\left<x-y,\nabla f(y)\right>\\
+g(x)\geq g(p_L(y))+\left<x-p_L(y),\gamma(y)\right>\\
+F(x)\geq f(y)+\left<x-y,\nabla f(y)\right>+g(p_L(y))+\left<x-p_L(y),\gamma(y)\right>
+\end{gather*}
+$$
+From the original lemma requirement that we need $F(p_L(y))\leq Q(p_L(y),y)$ we can simplify.
+$$
+F(x)-F(p_L(y))\geq-\frac{L}{2}\|p_L(y)-y\|^2+\left<x-p_L(y),\nabla f(y)+\gamma(y)\right>
+$$
+From the second lemma we know that $\nabla f(y)+\gamma(y)=L(y-p_L(y))$ which we use to simplify the rightmost product.
+$$
+F(x)-F(p_L(y))\geq-\frac{L}{2}\|p_L(y)-y\|^2+L\left<x-p_L(y),y-p_L(y)\right>
+$$
+After turning the product into $L\left<x-p_L(y)+y-y,y-p_L(y)\right>$ by adding $y-y$, we can simplify into our original statement, proving the lemma.
+$$
+F(x)-F(p_L(y))\geq\frac{L}{2}\|p_L(y)-y\|^2+L\left<y-x,p_L(y)-y\right>
+$$
+Now that we have the prep work layed out, we can start on the convergence proof itself. The proof follows by first establishing a recursive relationship between steps and then using it to bound the suboptimality. We start by applying the third lemma to at $x=x_k$ and $x=x^*$ to derive two bounds, where we use $y=y_{k+1}$ and $L=L_{k+1}$ for both.
+$$
+\begin{gather*}
+\frac{2}{L_{k+1}}(F(x_k)-F(x_{k+1}))\geq\|x_{k+1}-y_{k+1}\|^2+2\left<x_{k+1}-y_{k+1},y_{k+1}-x_k\right>\\
+\frac{2}{L_{k+1}}(F(x^*)-F(x_{k+1}))\geq\|x_{k+1}-y_{k+1}\|^2+2\left<x_{k+1}-y_{k+1},y_{k+1}-x^*\right>
+\end{gather*}
+$$
+To simplify the notation, we can define $v_k=F(x_k)-F(x^*)$ and also the fact that $F(x_k)-F(x_{k+1})=(F(x_k)-F(x^*))-(F(x_{k+1}-F(x^*)))$ to make both bounds be on the same terms.
+$$
+\begin{gather*}
+\frac{2}{L_{k+1}}(v_k-v_{k+1})\geq\|x_{k+1}-y_{k+1}\|^2+2\left<x_{k+1}-y_{k+1},y_{k+1}-x_k\right>\\
+-\frac{2}{L_{k+1}}(v_{k+1})\geq\|x_{k+1}-y_{k+1}\|^2+2\left<x_{k+1}-y_{k+1},y_{k+1}-x^*\right>
+\end{gather*}
+$$
+Then we multiply the first by $t_{k+1}-1$ before adding the inequalities together so that we can derive a relationship weighted by $t_{k+1}$.
+$$
+\frac{2}{L_{k+1}}((t_{k+1}-1)v_k-t_{k+1}v_{k+1})\geq t_{k+1}\|x_{k+1}-y_{k+1}\|^2+2\left<x_{k+1}-y_{k+1},t_{k+1}y_{k+1}-(t_{k+1}-1)\right>
+$$
+To simplify, we first use the fact that we defined $t_k$ such that $t^2_k=t^2_{k+1}-t_{k+1}$ and then use the identity $\|b-a\|^2+2\left<b-a,a-c\right>=\|b-a\|^2-\|a-c\|^2$.
+$$
+\begin{gather*}
+\frac{2}{L_{k+1}}(t^2_kv_k-t^2_{k+1}v_{k+1})\geq\|t_{k+1}(x_{k+1}-y_{k+1})\|^2+2t_{k+1}\left<x_{k+1}-y_{k+1},t_{k+1}y_{k+1}-(t_{k+1}-1)x_k-x^*\right>\\
+\frac{2}{L_{k+1}}(t^2_kv_k-t^2_{k+1}v_{k+1})\geq\|t_{k+1}x_{k+1}-(t_{k+1}-1)x_k-x^*\|^2-\|t_{k+1}y_{k+1}-(t_{k+1}-1)x_k-x^*\|^2
+\end{gather*}
+$$
+To make this a meaningful bound, we need to make the second norm on the right-hand side match the form of the first. From the defined update for $y_{k+1}$ we know that $t_{k+1}y_{k+1}=t_{k+1}x_k+(t_k-1)(x_k-x_{k+1})$, so we can simplify the second norm into the following.
+$$
+\|[t_{k+1}x_k+(t_k+1)(x_k-x_{k+1})]-t_{k+1}x_k+x_k-x^*\|^2=\|t_kx_k-(t_k-1)x_{k+1}-x^*\|^2
+$$
+Now we can define $u_k=t_kx_k-(t_k-1)x_{k+1}-x^*$ to finally get the bound into a more workable form.
+$$
+\frac{2}{L_{k+1}}(t^2_{k+1}v_k-t^2_{k+1}v_{k+1})\geq\|u_{k+1}\|^2-\|u_k\|^2
+$$
+Using the fact that we know that $L_k\geq L_{k+1}$ (either from a static step size or from the specific backtracking line search method defined in the paper), we can define the left-hand side with two terms, one dealing only with iteration $k$ and the other dealing only with iteration $k+1$. This acts as our main recursive relationship for the rest of the proof.
+$$
+\frac{2}{L_k}t^2_kv_k-\frac{2}{L_{k+1}}t^2_{k+1}v_{k+1}\geq\|u_{k+1}\|^2-\|u_k\|^2
+$$
+To simplify the notation of the analysis in the next steps, we define $a_k=\frac{2}{L_k}t^2_kv_k$ and $b_k=\|u_k\|^2$ to rewrite the relationship as follows.
+$$
+a_k-a_{k+1}\geq b_{k+1}-b_k
+$$
+Since we know that $a_k,b_k>0$ and that the sequence $a_k+b_k$ is monotonically non-decreasing (from the fact that we can rearrange and see that $a_k+b_k\geq a_{k+1}+b_{k+1}$), we can know that if $a_1+b_1\leq c$ with some constant $c$, then for all $k$ we have $a_k\leq c$. If we define $c=\|x_0-x^*\|^2$ and use the fact that we initialize $t_1=1$, we can get an inequality that would bound the entire sequence $a_k$ if proven correct.
+$$
+\frac{2}{L_1}v_1=\|x_1-x^*\|^2\leq\|y_1-x^*\|^2
+$$
+To start the proof of this inequality, we apply the third lemma on $x=x^*$, $y=y_1$, and $L=L_1$, and then swap in $p_{L_1}(y)=x_1$ from the method's definition.
+$$
+\begin{gather*}
+F(x^*)-F(p(y_1))\geq\frac{L_1}{2}\|p(y_1)-y_1\|^2+L_1\left<y_1-x^*,p(y_1)-y_1\right>\\
+F(x^*)-F(x_1)\geq\frac{L_1}{2}\|x_1-y_1\|^2+L_1\left<y-x^*,x_1-y_1\right>
+\end{gather*}
+$$
+Using the same norm identity that we used for the recursive relation proof lets us simplify in the same way, proving that the base case we needed holds.
+$$
+\begin{gather*}
+F(x^*)-F(x_1)\geq\frac{L_1}{2}(\|x_1-x^*\|^2-\|y_1-x^*\|^2)\\
+-v_1\geq \frac{L_1}{2}(\|x_1-x^*\|^2-\|y_1-x^*\|^2)\\
+\frac{2}{L_1}v_1+\|x_1-x^*\|^2\leq\|y_1-x^*\|^2
+\end{gather*}
+$$
+From this, we know that we have $a_k\leq c$ for all $k$, which after isolating $v_k$ and using the fact that we define $t_k$ in a way that makes $t_k\geq\frac{k+1}{2}$ hold can be used to simplify the denominator, proving the convergence theorem.
+$$
+\begin{gather*}
+\frac{2}{L_1}t^2_kv_k\leq\|x_0-x^*\|^2\\
+v_k\leq\frac{L_k\|x_0-x^*\|^2}{2t^2_k}\\
+v_k\leq\frac{2L_k\|x_0-x^*\|^2}{(k+1)^2}
+\end{gather*}
+$$
 
 ## Proximal Newton Method:
 In the same way that we can apply the ideas behind gradient descent and nesterov acceleration to PPMs, we can also apply Newton's Method. The same general principle of using a quadratic approximation of $f$ is done in Proximal Newton, but the hessian of $f$ is used to improve the approximation.
@@ -478,6 +592,7 @@ $$
 $$
 These can then be plugged into the bound, which after being simplified gives us the desired result.
 $$
+\begin{gather*}
 \lambda_{\max} (Q)  = \max_{x \neq 0} \frac{x^T H^{-1/2} \tilde{H} H^{-1/2} x}{x^T x} 
 = \max_{z \neq 0} \frac{z^T \tilde{H} z}{z^T H z}\\
 \lambda_{\max} (Q)= \max_{z \neq 0} \bigg( \frac{z^T \tilde{H} z}{z^T z} \frac{z^T z}{z^T H z} \bigg) 
@@ -485,6 +600,7 @@ $$
 \lambda_{\max}(Q)\leq \bigg( \max_{z \neq 0} \frac{1}{\frac{z^T H z}{z^T z}} \bigg) 
 = \lambda_{\max} (\tilde{H}) \frac{1}{\min_{z \neq 0} \frac{z^T H z}{z^T z}} 
 = \lambda_{\max} (\tilde{H}) \cdot \frac{1}{\lambda_{\min} (H)}
+\end{gather*}
 $$
 
 ### Global Weak Convergence:
