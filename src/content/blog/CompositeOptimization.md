@@ -1,10 +1,10 @@
 ---
-title: Basic Composite Optimization
-description: Proximal Point Methods, Proximal Gradient, Accelerated Proximal Gradient, Proximal Newton, and Proximal Quasi-Newton
-pubDate: 4/02/2026
+title: Composite Optimization
+description: Proximal Point Methods, Proximal Gradient, Accelerated Proximal Gradient, Proximal Newton, and Regularized Proximal Quasi-Newton
+pubDate: 4/16/2026
 ---
 
-This is another quick little review like the last ones. It's going to cover the general problem setup and the background of Proximal Point Methods, and then cover Proximal Gradient, Proximal Newton and Proximal Quasi-Newton and some of their convergence properties. It's also going to cover [Accelerated Proximal Gradient](https://www.cs.cmu.edu/~airg/readings/2012_02_21_a_fast_iterative_shrinkage-thresholding.pdf) and [Regularized Proximal Quasi-Newton](https://arxiv.org/abs/2210.07644), and the convergence information from their papers including some explanations that I personally needed.
+This is another quick little review like the last ones. It's going to cover the general problem setup and the background of Proximal Point Methods, and then cover Proximal Gradient, and Proximal Newton and some of their convergence properties. It's also going to cover [Accelerated Proximal Gradient](https://www.cs.cmu.edu/~airg/readings/2012_02_21_a_fast_iterative_shrinkage-thresholding.pdf) and [Regularized Proximal Quasi-Newton](https://arxiv.org/abs/2210.07644), and the convergence information from their papers including some explanations that I personally needed.
 
 ## Problem Setup:
 A composite optimization problem is an optimization problem over a function with two parts, a differentiable $f(x)$ and a potentially non-differentiable $g(x)$.
