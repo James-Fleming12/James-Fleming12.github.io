@@ -58,7 +58,18 @@ Since we assume that $f(x)$ is a hard function to optimize over, to simplify the
 $$
 Q_L(x,x_k)=f(x_k)+\left<x-x_k,\nabla f(x_k)\right>+\frac{L}{2}\|x-x_k\|^2+g(x)
 $$
-Through minimizing this surrogate we can arrive at the following iteration scheme.
+Through minimizing this surrogate we can derive Proximal Gradient. Since $f(x_k)$ is a constant with respect to $x$ it does not affect the location of the minimum so we can remove it from the subproblem.
+$$
+\text{arg}\min_x\left\{\left<x-x_k,\nabla f(x_k)\right>+\frac{L}{2}\|x-x_k\|^2+g(x)\right\}
+$$
+Using the same constant logic as before, we can add in the term $\frac{1}{2L}\|\nabla f(x^k)\|^2$ to the subproblem without changing the optimal $x$. We can factor out $\frac{L}{2}$ from all of the terms excluding $g(x)$ to simplify, which shows that the term we added in lets us turn the $f(x)$ terms into a collective squared term.
+$$
+\begin{gather*}
+\text{arg}\min_x\left\{\frac{L}{2}\left(\|x-x_k\|^2+2\left<x-x_k,\frac{1}{L}\nabla f(x_k)\right>+\left\|\frac{1}{L}\nabla f(x_k)\right\|^2\right)+g(x)\right\}\\
+\text{arg}\min_x\left\{\frac{L}{2}\left\|(x-x_k)-\frac{1}{L}\nabla f(x_k)\right\|^2+g(x)\right\}
+\end{gather*}
+$$
+This final simplified form gives us the proximal gradient update rule.
 $$
 x_{k+1}=\text{arg}\min_x\left\{\frac{L}{2}\left\|x-\left(x_k-\frac{1}{L}\nabla f(x_k)\right)\right\|^2+g(x)\right\}
 $$
