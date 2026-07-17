@@ -92,7 +92,6 @@ While Convolutional Neural Networks preserve isotropy through localized, station
 The paper [Anisotropy Is Inhernet to Self-Attention in Trasformers](https://arxiv.org/abs/2401.12143) provides a rigorous theoretical foundation showing that the representation degeneration problem, often referred to as the "coning effect", is not an artifact of the specific loss functions or datasets, but a fundamental geometric consequence of the self-attention operator itself.
 
 ### Self-Attention as a Row-Stochastic Contraction
-### Self-Attention as a Row-Stochastic Contraction
 To understand the geometric collapse, we model the standard self-attention mechanism. Given a sequence of $N$ token embeddings $X \in \mathbb{R}^{N \times d}$, and projection matrices for queries and keys $W_Q, W_K \in \mathbb{R}^{d \times d_k}$, the attention matrix $A \in \mathbb{R}^{N \times N}$ is computed as follows.
 $$
 A = \text{Softmax}\left(\frac{(XW_Q)(XW_K)^T}{\sqrt{d_k}}\right) = \text{Softmax}\left(\frac{X W_Q W_K^T X^T}{\sqrt{d_k}}\right)
