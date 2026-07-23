@@ -119,33 +119,5 @@ As the vectors structurally cluster around the shifted mean vector $c$, the angl
 ### Consequences
 In summary, the transformer's inductive bias is designed to globally route information and merge contexts, which mathematically necessitates a highly anisotropic space ($D_\text{eff}\rightarrow 1$). If these skewed representations are passed into an HDC random projection matrix, the guarantees from the JL lemma fail (as demonstrated in the earlier mathematical example). The distinguishing features of the tokens are completely overwhelmed by the dominant spatial cone, causing catastrophic aliasing when the hypervectors are quantized.
 
-## Re-Isotropicizing Transformer Representations
-
-We have established a fundamental incompatibility. Transformers act as a contraction mapping that funnels representations into an anisotropic cone, while HDC requires a perfectly isotropic space for the Johnson-Lindenstrauss random projections to preserve distinct concepts upon quantization.
-
-To bridge this gap and utilize powerful contextual embeddings within HDC frameworks, we must actively intervene to break the coning effect. This is typically done through two primary mechanisms: post-hoc geometric transformations or representation-level loss constraints.
-
-### Post-Hoc Whitening Transformations
-If we freeze a pre-trained Transformer, we can apply a linear transformation to its output space to explicitly flatten the variance before piping the vectors into the HDC projection matrix. This is known as a whitening transformation.
-
-Given a dataset of Transformer embeddings $X \in \mathbb{R}^{N \times d}$, we first compute the empirical mean $\mu = \frac{1}{N}\sum_{i=1}^N x_i$ and the empirical covariance matrix:
-$$
-\hat{\Sigma} = \frac{1}{N-1} \sum_{i=1}^N (x_i - \mu)(x_i - \mu)^T
-$$
-A whitening matrix $W_{\text{white}}$ is derived such that $W_{\text{white}}^T W_{\text{white}} = \hat{\Sigma}^{-1}$. Using the ZCA (Zero-phase Component Analysis) formulation, this is computed via the eigendecomposition $\hat{\Sigma} = U \Lambda U^T$:
-$$
-W_{\text{ZCA}} = U \Lambda^{-1/2} U^T
-$$
-By applying this transformation to our centered embeddings ($x_{\text{iso}} = W_{\text{ZCA}}(x - \mu)$) we force the new covariance matrix to equal the identity matrix ($\Sigma_{\text{iso}} = I_d$). The narrow cone is mathematically stretched back into a perfect hypersphere. When $x_{\text{iso}}$ is passed to the HDC projection matrix, the random projections will successfully capture distinguishing features because the effective dimensionality has been restored to $D_{\text{eff}} = d$.
-
-### Contrastive Learning and Uniformity
-Rather than fixing the space after training, we can alter the Transformer's optimization objective to resist the self-attention contraction. While standard cross-entropy loss does nothing to prevent anisotropy, contrastive learning frameworks (like the InfoNCE loss used in CLIP or SimCSE) explicitly optimize for spatial uniformity.
-
-Contrastive loss operates on the unit hypersphere (enforced via $L_2$ normalization). It maximizes the similarity of positive pairs $(x, x^+)$ while explicitly minimizing the cosine similarity of negative pairs $(x, x^-)$:
-$$
-\mathcal{L}_{\text{InfoNCE}} = -\log \frac{\exp(\text{sim}(x, x^+)/\tau)}{\sum_{j=1}^K \exp(\text{sim}(x, x^-_j)/\tau)}
-$$
-Theoretical analysis of contrastive learning shows that as the number of negative samples $K \to \infty$, the loss strongly penalizes clustering. It acts as an opposing force to the Perron-Frobenius contraction of the attention matrix, pushing independent representations to be highly orthogonal. This restores the condition $A(x,y) \approx 0$ for independent samples, naturally generating the isotropic space that HDC requires to function without catastrophic aliasing.
-
-### Conclusion
+## Conclusion
 Hyperdimensional Computing is not fundamentally incompatible with modern deep learning, but it is geometrically rigid. By understanding the spectral properties of the architectures we use, leveraging the natural stationarity of CNNs, or explicitly correcting the row-stochastic collapse of Transformers, we can design hybrid models that capitalize on both deep contextual understanding and highly efficient, robust symbolic reasoning.
