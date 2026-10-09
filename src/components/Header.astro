@@ -5,7 +5,53 @@ import HeaderLink from './HeaderLink.astro';
 <header>
     <nav>
         <!--<h2><a href="/">{SITE_TITLE}</a></h2> -->
-        <h2><a href="/">:D</a></h2>
+        <div class="brand">
+            <h2><a href="/">:D</a></h2>
+            <button
+                id="theme-toggle"
+                class="theme-toggle"
+                type="button"
+                aria-label="Switch to light mode"
+                title="Switch to light mode"
+            >
+                <svg
+                    class="icon icon-sun"
+                    viewBox="0 0 24 24"
+                    width="20"
+                    height="20"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    aria-hidden="true"
+                >
+                    <circle cx="12" cy="12" r="5"></circle>
+                    <line x1="12" y1="1" x2="12" y2="3"></line>
+                    <line x1="12" y1="21" x2="12" y2="23"></line>
+                    <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                    <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                    <line x1="1" y1="12" x2="3" y2="12"></line>
+                    <line x1="21" y1="12" x2="23" y2="12"></line>
+                    <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                    <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                </svg>
+                <svg
+                    class="icon icon-moon"
+                    viewBox="0 0 24 24"
+                    width="20"
+                    height="20"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    aria-hidden="true"
+                >
+                    <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                </svg>
+            </button>
+        </div>
         <div class="internal-links">    
             <HeaderLink href="/">home</HeaderLink>
             <HeaderLink href="/stuff">stuff</HeaderLink>
@@ -42,8 +88,8 @@ import HeaderLink from './HeaderLink.astro';
     header {
         margin: 0;
         padding: 0 1em;
-        background: rgb(25, 23, 36);;
-        box-shadow: 0 2px 8px rgba(var(--black), 5%);
+        background: var(--background);
+        box-shadow: 0 2px 8px rgb(0 0 0 / 5%);
     }
     h2 {
         margin: 0;
@@ -61,7 +107,7 @@ import HeaderLink from './HeaderLink.astro';
     }
     nav a {
         padding: 1em 0.5em;
-        color: var(--white);
+        color: var(--heading);
         border-bottom: 4px solid transparent;
         text-decoration: none;
     }
@@ -69,6 +115,43 @@ import HeaderLink from './HeaderLink.astro';
         text-decoration: none;
         font-weight: normal;
         border-bottom-color: var(--accent);
+    }
+    .brand {
+        display: flex;
+        align-items: center;
+    }
+    .theme-toggle {
+        display: flex;
+        align-items: center;
+        margin-left: 0.25em;
+        padding: 0.35em;
+        color: var(--heading);
+        background: none;
+        border: none;
+        border-radius: 6px;
+        cursor: pointer;
+    }
+    .theme-toggle:hover {
+        color: var(--accent);
+    }
+    .theme-toggle:focus-visible {
+        outline: 2px solid var(--accent);
+        outline-offset: 2px;
+    }
+    .theme-toggle .icon {
+        position: relative;
+        top: -1px; /* optically center the icons with the ":D" lettering */
+        width: 20px;
+        height: 20px;
+    }
+    .theme-toggle .icon-moon {
+        display: none;
+    }
+    :global(html[data-theme='light']) .theme-toggle .icon-sun {
+        display: none;
+    }
+    :global(html[data-theme='light']) .theme-toggle .icon-moon {
+        display: block;
     }
     .internal-links {
         position: absolute;
@@ -88,3 +171,30 @@ import HeaderLink from './HeaderLink.astro';
         }
     }
 </style>
+<script>
+    const toggle = document.getElementById('theme-toggle');
+    const root = document.documentElement;
+
+    const isLight = () => root.dataset.theme === 'light';
+
+    function updateToggleLabel() {
+        if (!toggle) return;
+        const label = isLight() ? 'Switch to night mode' : 'Switch to light mode';
+        toggle.setAttribute('aria-label', label);
+        toggle.setAttribute('title', label);
+    }
+
+    toggle?.addEventListener('click', () => {
+        const theme = isLight() ? 'night' : 'light';
+        root.dataset.theme = theme;
+        try {
+            localStorage.setItem('theme', theme);
+        } catch {
+            // localStorage can be unavailable (e.g. private browsing);
+            // the theme still applies for the current page.
+        }
+        updateToggleLabel();
+    });
+
+    updateToggleLabel();
+</script>

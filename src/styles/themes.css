@@ -1,0 +1,42 @@
+/*
+  Site color schemes
+  ==================
+  All of the site's colors live in the two blocks below. To change a theme,
+  edit the values here - no other file needs to be touched. Both blocks must
+  define the same set of variables.
+
+  - night: Rose Pine (dark), the site's original color scheme
+  - light: Rose Pine Dawn, https://rosepinetheme.com/
+
+  The active theme is selected with data-theme="night" | "light" on <html>.
+  See BaseHead.astro (applies it before first paint) and Header.astro (toggle).
+*/
+
+/* Night - Rose Pine */
+:root,
+:root[data-theme='night'] {
+    color-scheme: dark;
+    --background: #191724; /* page, header and footer background */
+    --text: #dfdfdf; /* body text */
+    --heading: #f4ede8; /* headings and top-bar links */
+    --muted: #60739f; /* dates, footer text and other secondary text */
+    --accent: #c4a7e7; /* links and highlights */
+    --code-background: #444547; /* inline code background */
+    --border: #444547; /* horizontal rules */
+    --box-shadow: 0 2px 6px rgb(96 115 159 / 25%), 0 8px 24px rgb(96 115 159 / 33%),
+        0 16px 32px rgb(96 115 159 / 33%);
+}
+
+/* Light - Rose Pine Dawn */
+:root[data-theme='light'] {
+    color-scheme: light;
+    --background: #faf4ed; /* Dawn base */
+    --text: #575279; /* Dawn text */
+    --heading: #575279; /* Dawn text */
+    --muted: #797593; /* Dawn subtle */
+    --accent: #907aa9; /* Dawn iris */
+    --code-background: #f2e9e1; /* Dawn overlay */
+    --border: #dfdad9; /* Dawn highlight (medium) */
+    --box-shadow: 0 2px 6px rgb(87 82 121 / 25%), 0 8px 24px rgb(87 82 121 / 33%),
+        0 16px 32px rgb(87 82 121 / 33%);
+}
