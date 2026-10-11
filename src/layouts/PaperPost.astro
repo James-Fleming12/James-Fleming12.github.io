@@ -1,0 +1,323 @@
+---
+import type { CollectionEntry } from 'astro:content';
+import BaseHead from '../components/BaseHead.astro';
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+import FormattedDate from '../components/FormattedDate.astro';
+import { generateCitation } from '../utils/citation';
+
+type Props = CollectionEntry<'papers'>['data'];
+
+const {
+    title,
+    description,
+    authors,
+    pubDate,
+    updatedDate,
+    venue,
+    url,
+    pdf,
+    links,
+    ai,
+    cite,
+    citation: citationOverride,
+} = Astro.props;
+
+const pageUrl = new URL(Astro.url.pathname, Astro.site ?? Astro.url.origin).href;
+const citation = cite
+    ? (citationOverride ?? generateCitation({ authors, title, pubDate, venue, url: url ?? pageUrl }))
+    : undefined;
+---
+
+<!doctype html>
+<html lang="en">
+    <head>
+        <BaseHead title={title} description={description} />
+        <style>
+            main {
+                width: calc(100% - 2em);
+                max-width: 100%;
+                margin: 0;
+            }
+            .prose {
+                width: 720px;
+                max-width: calc(100% - 2em);
+                margin: auto;
+                padding: 1em;
+                color: var(--text);
+            }
+            .title {
+                margin-bottom: 1em;
+                padding: 1em 0 0;
+                text-align: center;
+                line-height: 1.2;
+            }
+            .title h1 {
+                margin: 0 0 0.4em 0;
+            }
+            .authors {
+                margin: 0;
+                color: var(--heading);
+            }
+            .meta {
+                margin: 0.25em 0 0;
+                color: var(--muted);
+            }
+            .last-updated-on {
+                font-style: italic;
+            }
+            .ai-disclaimer {
+                margin: 0 0 1em;
+                padding: 0.75em 1em;
+                background: var(--code-background);
+                border-left: 4px solid var(--accent);
+                border-radius: 0 8px 8px 0;
+                font-size: 0.9em;
+                line-height: 1.5;
+            }
+            .ai-disclaimer strong {
+                color: var(--heading);
+            }
+            .paper-links {
+                display: flex;
+                flex-wrap: wrap;
+                justify-content: center;
+                gap: 0.5em;
+                margin: 1em 0 0;
+            }
+            .paper-link {
+                padding: 0.3em 0.9em;
+                font-size: 0.85em;
+                line-height: 1.5;
+                color: var(--accent);
+                border: 1px solid var(--accent);
+                border-radius: 999px;
+                text-decoration: none;
+            }
+            .paper-link:hover {
+                color: var(--background);
+                background: var(--accent);
+            }
+            .viewer {
+                width: min(1100px, calc(100% - 2em));
+                margin: 1em auto 2em;
+            }
+            .viewer iframe {
+                display: block;
+                width: 100%;
+                height: 85vh;
+                min-height: 480px;
+                background: #fff;
+                border: 1px solid var(--border);
+                border-radius: 12px;
+            }
+            .viewer-hint {
+                margin: 0.5em 0 0;
+                color: var(--muted);
+                font-size: 0.8em;
+                text-align: center;
+            }
+            .citation h2 {
+                padding-bottom: 0.5em;
+                border-bottom: 1px solid var(--border);
+            }
+            .bibtex {
+                position: relative;
+            }
+            .bibtex pre {
+                margin: 0;
+                overflow-x: auto;
+                background: var(--code-background);
+                font-size: 0.8em;
+            }
+            .copy-button {
+                position: absolute;
+                top: 0.6em;
+                right: 0.6em;
+                display: flex;
+                padding: 0.35em;
+                color: var(--muted);
+                background: var(--background);
+                border: 1px solid var(--border);
+                border-radius: 4px;
+                cursor: pointer;
+            }
+            .copy-button:hover {
+                color: var(--accent);
+            }
+            .copy-button:focus-visible {
+                outline: 2px solid var(--accent);
+                outline-offset: 2px;
+            }
+            .copy-button .icon-check {
+                display: none;
+            }
+            .copy-button.copied {
+                color: var(--accent);
+            }
+            .copy-button.copied .icon-copy {
+                display: none;
+            }
+            .copy-button.copied .icon-check {
+                display: block;
+            }
+            @media (max-width: 720px) {
+                .viewer iframe {
+                    height: 60vh;
+                }
+            }
+        </style>
+    </head>
+
+    <body>
+        <Header />
+        <main>
+            <article>
+                <div class="prose">
+                    <div class="title">
+                        <h1>{title}</h1>
+                        <p class="authors">{authors.join(', ')}</p>
+                        <p class="meta">
+                            {venue && <span>{venue} · </span>}
+                            <FormattedDate date={pubDate} />
+                            {
+                                updatedDate && (
+                                    <span class="last-updated-on">
+                                        · last updated <FormattedDate date={updatedDate} />
+                                    </span>
+                                )
+                            }
+                        </p>
+                        {
+                            (pdf || (links && links.length > 0)) && (
+                                <p class="paper-links">
+                                    {pdf && (
+                                        <a class="paper-link" href={pdf} target="_blank" rel="noopener">
+                                            PDF ↗
+                                        </a>
+                                    )}
+                                    {links?.map((link) => (
+                                        <a class="paper-link" href={link.url} target="_blank" rel="noopener">
+                                            {link.label} ↗
+                                        </a>
+                                    ))}
+                                </p>
+                            )
+                        }
+                        <hr />
+                    </div>
+
+                    {
+                        ai && (
+                            <div class="ai-disclaimer" role="note">
+                                <strong>AI disclaimer.</strong> This paper was written with AI rather
+                                than by me.
+                            </div>
+                        )
+                    }
+
+                    <slot />
+                </div>
+
+                {
+                    pdf && (
+                        <div class="viewer">
+                            <iframe src={pdf} title={`PDF of ${title}`} loading="lazy" />
+                            <p class="viewer-hint">
+                                Not rendering?{' '}
+                                <a href={pdf} target="_blank" rel="noopener">
+                                    Open the PDF in a new tab
+                                </a>
+                                .
+                            </p>
+                        </div>
+                    )
+                }
+
+                {
+                    citation && (
+                        <section class="citation prose">
+                            <h2>Citation</h2>
+                            <p>If you found this paper useful, please cite it as:</p>
+                            <p>{citation.text}</p>
+                            <div class="bibtex">
+                                <pre>
+                                    <code>{citation.bibtex.trim()}</code>
+                                </pre>
+                                <button
+                                    class="copy-button"
+                                    type="button"
+                                    aria-label="Copy BibTeX to clipboard"
+                                    title="Copy BibTeX to clipboard"
+                                >
+                                    <svg
+                                        class="icon-copy"
+                                        xmlns="http://www.w3.org/2000/svg"
+                                        width="16"
+                                        height="16"
+                                        viewBox="0 0 24 24"
+                                        fill="none"
+                                        stroke="currentColor"
+                                        stroke-width="2"
+                                        stroke-linecap="round"
+                                        stroke-linejoin="round"
+                                        aria-hidden="true"
+                                    >
+                                        <rect width="14" height="14" x="8" y="8" rx="2" ry="2" />
+                                        <path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2" />
+                                    </svg>
+                                    <svg
+                                        class="icon-check"
+                                        xmlns="http://www.w3.org/2000/svg"
+                                        width="16"
+                                        height="16"
+                                        viewBox="0 0 24 24"
+                                        fill="none"
+                                        stroke="currentColor"
+                                        stroke-width="2"
+                                        stroke-linecap="round"
+                                        stroke-linejoin="round"
+                                        aria-hidden="true"
+                                    >
+                                        <path d="M20 6 9 17l-5-5" />
+                                    </svg>
+                                </button>
+                            </div>
+                        </section>
+                    )
+                }
+            </article>
+        </main>
+        <Footer />
+        <script>
+            document.querySelectorAll('.copy-button').forEach((button) => {
+                button.addEventListener('click', () => {
+                    const code = button.parentElement?.querySelector('code');
+                    if (!code) return;
+                    const text = code.textContent ?? '';
+
+                    const selectText = () => {
+                        // Clipboard API can be unavailable (e.g. non-HTTPS);
+                        // select the text so it can still be copied manually.
+                        const range = document.createRange();
+                        range.selectNodeContents(code);
+                        const selection = window.getSelection();
+                        selection?.removeAllRanges();
+                        selection?.addRange(range);
+                    };
+
+                    const copied = () => {
+                        button.classList.add('copied');
+                        window.setTimeout(() => button.classList.remove('copied'), 1500);
+                    };
+
+                    if (navigator.clipboard) {
+                        navigator.clipboard.writeText(text).then(copied, selectText);
+                    } else {
+                        selectText();
+                    }
+                });
+            });
+        </script>
+    </body>
+</html>

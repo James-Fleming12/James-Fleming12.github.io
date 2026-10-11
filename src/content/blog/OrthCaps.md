@@ -3,7 +3,7 @@ title: OrthCaps Research Paper
 description: OrthCaps Paper Review
 pubDate: 10/15/2024
 ---
-Found in the [research paper](https://arxiv.org/abs/2403.13351) of the same name, an Orthogonal Capsule Network is a novel [CapsNet](https://james-fleming12.github.io/stuff/capsnet/) architecture that aims to "reduce redundancy, improve routing perforamnce, and decrease parameter counts". The paper tackles these challenges with three main new contributions. All three concepts rely heavily on the concept of ensuring that capsules represent different objects without any observable overlap and remain consistent in that.
+Found in the [research paper](https://arxiv.org/abs/2403.13351) of the same name, an Orthogonal Capsule Network is a novel [CapsNet](https://james-fleming12.github.io/blog/capsnet/) architecture that aims to "reduce redundancy, improve routing perforamnce, and decrease parameter counts". The paper tackles these challenges with three main new contributions. All three concepts rely heavily on the concept of ensuring that capsules represent different objects without any observable overlap and remain consistent in that.
 1. Capsule Pruning (automatically removing similar capsules during runtime)
 2. Orthogonal Sparse Attention Routing (a replacement of Dynamic Routing)
 3. Orthogonalization (Householder Orthogonalization to ensure the previous qualities from pruning are kept)
