@@ -11,6 +11,11 @@ import { unified } from '@astrojs/markdown-remark';
 export default defineConfig({
     site: 'https://james-fleming12.github.io',
     integrations: [mdx(), sitemap()],
+    build: {
+        // Inline page CSS so navigations paint immediately with the correct
+        // theme rather than flashing while a stylesheet request is in flight.
+        inlineStylesheets: 'always',
+    },
     markdown: {
         processor: unified({
             remarkPlugins: [remarkMath],

@@ -32,11 +32,9 @@ const { title, description, image = '/blog-placeholder-1.jpg' } = Astro.props;
     })();
 </script>
 
-<!-- Font preloads -->
-<link rel="preload" href="/fonts/FragmentMono-Regular.ttf" as="font" type="font/woff" crossorigin />
-<link rel="preload" href="/fonts/FragmentMono-Regular.ttf" as="font" type="font/woff" crossorigin />
-
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.15.1/dist/katex.css" integrity="sha384-WsHMgfkABRyG494OmuiNmkAOk8nhO1qE+Y6wns6v+EoNoTNxrWxYpl5ZYWFOLPCM" crossorigin="anonymous">
+<!-- Preload the body font so first paint doesn't wait on font discovery.
+     FragmentMono is declared but unused, so it is not preloaded. -->
+<link rel="preload" href="/fonts/atkinson-regular.woff" as="font" type="font/woff" crossorigin />
 
 <!-- Canonical URL -->
 <link rel="canonical" href={canonicalURL} />

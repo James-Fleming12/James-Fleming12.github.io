@@ -4,6 +4,9 @@ import BaseHead from '../components/BaseHead.astro';
 import Header from '../components/Header.astro';
 import Footer from '../components/Footer.astro';
 import FormattedDate from '../components/FormattedDate.astro';
+// Bundled locally instead of the jsdelivr <link> so rendering doesn't wait on
+// a third-party CDN (and the version matches the HTML rehype-katex generates).
+import 'katex/dist/katex.min.css';
 
 type Props = CollectionEntry<'blog'>['data'];
 
